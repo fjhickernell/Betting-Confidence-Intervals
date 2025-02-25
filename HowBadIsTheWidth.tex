@@ -1,0 +1,103 @@
+\documentclass{amsart}
+\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,color}
+\usepackage[hyphens]{url}
+\usepackage[utf8]{inputenc}
+\usepackage{esdiff}
+
+\input{FJHDef.tex}
+
+
+\usepackage{algpseudocode}
+\usepackage{algorithm, algorithmicx}
+\algnewcommand\algorithmicparam{\textbf{Parameters:}}
+\algnewcommand\PARAM{\item[\algorithmicparam]}
+\algnewcommand\algorithmicinput{\textbf{Input:}}
+\algnewcommand\INPUT{\item[\algorithmicinput]}
+\algnewcommand\RETURN{\State \textbf{Return }}
+
+\newcommand{\rd}{\,\mathrm{d}}
+
+\begin{document}
+\title{Constructing a Worst Case for Confidence Intervals of Bounded Random Variables}
+
+\author{Aadit Jain}
+
+\author{Fred J. Hickernell }
+\address{Department of Applied Mathematics, Illinois Institute of Technology, Chicago, IL}
+\email{hickernell@iit.edu}
+
+\author{Art B. Owen}
+
+\author{Aleksei Sorokin}
+
+\begin{abstract} TBD
+\end{abstract}
+
+\maketitle
+
+Define a random variable $Y$ such that 
+\begin{equation*}
+    \Prob(Y = 1) = p, \quad \Prob(Y=-1) = 1-p, \qquad \text{for some } p \in [0,1].
+\end{equation*}
+Note that 
+\begin{align*}
+    \mu : = \Ex(Y) & = p - (1-p) = 2 p - 1, \\
+    \Ex(Y^2) & = 1, \\
+    \sigma^2 : = \var(Y) & = \Ex(Y^2) - \mu^2 = 1 - (2p-1)^2 = 4p(1-p)\\
+    \Ex(Y^3) & = \Ex(Y) =  2p -1, \\
+    \Ex[(Y - \mu)^4] & = p[1-(2p-1)]^4 + (1-p)[-1 - (2p-1)]^4 \\
+    & = p(2 - 2p)^4 + (1-p)(-2p)^4 \\
+    & = 16p(1-p)[(1-p)^3 + p^3] \\
+    & = 16p(1-p)(1 - 3p + 3 p^2) \\
+    \kappa : = \frac{\Ex[(Y - \mu)^4]}{\sigma^4} & = 
+    \frac{1 - 3p + 3 p^2}{p(1-p)}
+\end{align*}
+Thus, the kurtosis can range from $1$, when $p = 1/2$ to $\infty$ when $p = 0$ or $p=1$.
+
+Suppose we take an IID sample $Y_1, \ldots, Y_N$.  Let $M$ of the values be $1$ and $N-M$ be $-1$.  Then our sample mean is 
+\begin{equation*}
+    \hmu_N := \frac 1N \sum_{i=1}^N Y_i 
+    = \frac{M - (N- M)}{N} =
+    \frac{2M -N}{N} =  2 \hp -1
+\end{equation*}
+where $\hp : = M/N$.
+
+Can we show that for some choice of $p$
+\[
+\Prob\Bigl(\lvert \mu - \hmu_N \rvert > \frac{c \log(1/\alpha)}{N} \Bigr) \ge \alpha
+\]
+for some $c$, meaning that the $1-\alpha$ confidence interval will always be $\Order(\log(1/\alpha)/n)$ for bounded random variables?
+
+This is equivalent to
+\[
+\Prob\Bigl(\lvert \mu - \hmu_N \rvert > \frac{c \beta}{N} \Bigr) \ge \exp(-\beta)
+\]
+
+Note that 
+\[
+N(\mu - \hmu_N)  = 2N(p - \hp) = 2(m - M)
+\]
+where $m : = Np$ is not necessarily an integer.
+Moreover, 
+\begin{align*}
+    \MoveEqLeft \Prob(\lvert \mu - \hmu_N \rvert > b/N) \\
+    &= \Prob[ m - M < -b/2 \text{ or } m - M >  b/2] \\
+    &= \Prob[ M < m - b/2 \text{ or } M > m + b/2] \\
+    & = \sum_{0 \le l  < m - b/2}  \binom{N}{l} p^{l}(1-p)^{N-l} 
+    + \sum_{m + b/2 < l \le N}  \binom{N}{l} p^l(1-p)^{n-l}
+\end{align*}
+
+Thus, e.g., for $p < 1/N$ and $b \le 2pN $
+\[
+\Prob(\lvert \mu - \hmu_N \rvert > 2/N) 
+> (1-p)^{N} 
+\]
+
+Let $f(x) = \exp(Nx) - (1-x)^N$.  Note that $f(0) =0$ and 
+\[
+f'(x) = N \exp(Nx) - N(1-x)^{N-1}
+\]
+\bibliographystyle{amsalpha}
+\bibliography{FJH25,FJHown25}
+
+\end{document}

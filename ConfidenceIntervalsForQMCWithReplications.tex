@@ -1,0 +1,66 @@
+\documentclass{amsart}
+\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,color}
+\usepackage[hyphens]{url}
+\usepackage[utf8]{inputenc}
+\usepackage{esdiff}
+
+\input{FJHDef.tex}
+
+
+\usepackage{algpseudocode}
+\usepackage{algorithm, algorithmicx}
+\algnewcommand\algorithmicparam{\textbf{Parameters:}}
+\algnewcommand\PARAM{\item[\algorithmicparam]}
+\algnewcommand\algorithmicinput{\textbf{Input:}}
+\algnewcommand\INPUT{\item[\algorithmicinput]}
+\algnewcommand\RETURN{\State \textbf{Return }}
+
+\newcommand{\rd}{\,\mathrm{d}}
+
+\begin{document}
+\title{Best QMC Sample Sizes for Confidence Intervals/Sequences Based on Replications}
+
+\author{Aadit Jain}
+
+\author{Fred J. Hickernell }
+\address{Department of Applied Mathematics, Illinois Institute of Technology, Chicago, IL}
+\email{hickernell@iit.edu}
+
+\author{Art B. Owen}
+
+\author{Aleksei Sorokin}
+
+\begin{abstract} TBD
+\end{abstract}
+
+\maketitle
+
+\section*{Ideas to Develop}
+\begin{align*}
+    n & = \text{number of QMC samples per replication} \\
+    R & = \text{number of replications} \\
+    N & = \text{total sample size} = nR
+\end{align*}
+\begin{itemize}
+    \item Survey finite sample confidence intervals and/or sequences and determine what the optimal $n$ needs to be for fixed budget $N$.
+    \begin{itemize}
+        \item Art can you put your note on Bennett's inequality in this Overleaf in LaTeX?  I have the pdf only.  This will be a good guide for the other bounds
+        \item We might also look at Bernstein, Hoeffding, and ???
+        \item It seems that there is a $1/R$ term in the width of the confidence interval that may drive $n$ to be a small power of $N$.  This seems to make Bennett different than CLT.  Is this always true?
+        \item We can also look at \cite{HicEtal14a}, which assumes a bounded kurtosis.
+    \end{itemize} 
+\item Some questions/comments (including the \textbf{AnOraclesRate.tex}):
+    \begin{itemize}
+        \item How were the MC widths and QMC widths decay for $\theta = 3/2$ determined? I was unable to understand the math.
+        \item Since $An^{-\theta} = \sigma_n$, why isn't the square root of the $\sigma^2_n$ taken for $A$? For e.g, why is it 12 and not $\sqrt{12}$ for $f(x) = x$, and similarly why isn't $\sqrt{\frac1{12}\int_0^1 f'(x)^2\rd x}$ taken? I see that the square root is taken for the $\theta$.
+        \item While the $\sigma^2_n$  is dependent on $n$, shouldn't it also be dependent on $R$? Because if $R = 1$, then $\sigma^2_n = 0$. That is the reason the CLT's for the ridge functions always reach $0$ when $n = N$, which is kind of misleading. Also doesn't the CLT somehow limit what our $n$ could be as our $R$ must be at least $2^5$ (using the 30 sample points rule)? But even if we restrict the $n$ to $2^5$ for $N = 2^{10}$, the CLT is still way better than EB and Betting. 
+        \item Similar to the inequality that exists for EB (Bennett’s inequality), is there something similar for Betting or are we assuming that this inequality can be applied to Betting as well? Because the simulations and even the paper prove how Betting is tighter than EB. 
+        \item The data for the oscillatory example is quite different from what we've gotten till now. We haven't seen such high optimum $n$ values, even for smaller $N$ values than the simulations were run at. Is the optimum $n$ somehow not linked very strongly to the roughness or smoothness of a function, but more on how periodic it is? 
+    \end{itemize}
+\end{itemize}
+
+
+\bibliographystyle{amsalpha}
+\bibliography{FJH25,FJHown25}
+
+\end{document}

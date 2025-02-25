@@ -1,0 +1,281 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{natbib}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\newcommand{\art}[1]{\begingroup\color{blue}#1\endgroup}
+\newcommand{\aadit}[1]{\begingroup\color{orange}#1\endgroup}
+\newcommand{\fred}[1]{\begingroup\color{red}#1\endgroup}
+\newcommand{\alexei}[1]{\begingroup\color{green}#1\endgroup}
+
+% Lets make it look like writing on a blackboards
+% not a 1970s typewriter!
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\emptyset}{\varnothing}
+
+\newcommand{\e}{\mathbb{E}}
+\newcommand{\var}{\mathrm{Var}}
+
+% commands in lower case give less carpal trouble
+\newcommand{\mc}{\mathrm{MC}}
+\newcommand{\rqmc}{\mathrm{RQMC}}
+\newcommand{\runif}{\mathbb{U}}
+\newcommand{\rd}{\,\mathrm{d}}
+\begin{document}
+
+\section{Asymptotically best budget allocation}
+
+In this section, we consider how an oracle would choose
+to allocate the budget between the number $R$ of replications
+and the RQMC sample size $n$ of each replicate, subject to
+a constraint that $Rn=N$ total function evaluations.  The
+oracle in question actually knows exactly how the RQMC
+variance decays as $n$ increases.  We will see that
+when RQMC is no better than MC, then $n=1$ is best.
+On the other hand, when RQMC is {\sl most} effective we should 
+also see {\sl very small} $n$ do best.
+
+Suppose that $Y_1,\dots,Y_m$ are independent and identically
+distributed random variables with $\Pr(0\le Y_i\le 1)=1$.
+Then for $0<\delta<1$,
+Bennett's inequality from Maurer and Pontil \cite{maurer2009empirical} shows that
+there is probability at least $1-\delta$  that
+\begin{align}\label{eq:upperbound}
+\e(Y) -   \frac1m\sum_{i=1}^mY_i \le \sqrt{\frac{2\sigma^2\log(1/\delta)}m}
++ \frac{\log(1/\delta)}{3m}.
+\end{align}
+The oracle can use this to get an interval whose width is
+twice the right hand side of the upper bound in~\eqref{eq:upperbound}.
+We will look at what choices of $n$ and $R$ minimize this bound for fixed $N$ and $\delta$.
+
+In RQMC we take $m=R$ replicates of $n$ RQMC points.
+So the width of the two sided interval is 
+\begin{align}\label{eq:thewidth}
+\frac{2\sigma_n}{\sqrt{R}}\sqrt{2\log(1/\delta)}  + \frac{2\log(1/\delta)}{3R}
+\end{align}
+where $\sigma^2_n$ is the RQMC variance using $n$ sample  points.
+
+\aadit{Considering that EB is for IID, is it valid to replace $\sigma^2$ with $\sigma^2_n$? Since it is for IID, could the variance be for the $R$ samples instead? Then, variance could be affected by both $n$ (since $n$ is responsible in getting a value for each $R$) and $R$? - Aadit}
+
+Suppose that $\sigma_n = An^{-\theta}$.  For smooth integrands
+and $d=1$, we have $\theta=3/2$ and for smooth integrands with $d>1$, we do better than $3/2-\epsilon$ asymptotically for any $\epsilon>0$, so we use $\theta=3/2$ as an example for RQMC doing very well. If RQMC is only as good as MC, then we would have $\theta=1/2$. Some scrambled digital nets and scrambled Halton methods have variance $o(1/n)$ whenever the MC variance is finite. Therefore $\theta=1/2$ is more pessimistic than realistic and we can use it as a lower bound. For integrands of bounded
+variation in the sense of Hardy and Krause, that are not smooth, $\theta<1-\epsilon$ for any $\epsilon>0$ is reasonable, so we use $\theta=1$ for that middle case.  We thus have three interesting values of $\theta$ to consider: $1/2$, $1$ and $3/2$.  Empirical measurements that regress log standard deviation on $\log(n)$ usually show rates between $1/2$ and $3/2$.  They don't necessarily show an asymptotically valid convergence rate, presumably because $n$ is not yet large enough for that.  A rate between $1/2$ and $3/2$ may nonetheless provide a better guide to actual performance than the asymptotic rates. From this point of view, we could find the whole range $1/2\le \theta\le3/2$ useful to consider.
+
+Recall that the budget $N=nR$ is fixed as is $\delta$.
+Then the width  of the oracle's window is
+\begin{align}\label{eq:oraclewidth}
+\frac{2An^{-\theta}}{\sqrt{N/n}}\sqrt{2\log(1/\delta)}  + \frac{2\log(1/\delta)}{3N/n}
+=\frac{2A}{\sqrt{N}}n^{1/2-\theta}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}.
+\end{align}
+We see immediately that when $\theta = 1/2$, the best $n$ is $n=1$. In other words, if all we are getting is the Monte Carlo rate of convergence then we should expect no improvement from switching to RQMC.  This holds even if RQMC attains the same variance rate as MC but with a favorable constant.  Interestingly, taking $n=1$ in that case would be the same as using plain MC and so there would be no benefit to the oracle's confidence window width from having that variance reduction.  This also means that standard Monte Carlo variance reduction techniques would not be helpful.  We only benefit from a better convergence rate.
+
+For $\theta>1/2$, the oracle's interval width in~\eqref{eq:oraclewidth} is a convex function of $n$ with a unique minimum over $n\in(0,\infty)$ at some value $\tilde n$ which is not necessarily an integer.  
+If $\tilde n<1$, then $n=1$ is best.  If $\tilde n$ is a positive
+integer then $n=\tilde n$ is best. For noninteger $\tilde n >1$,
+the best $n$ is either $\lfloor \tilde n\rfloor$
+or  $\lceil \tilde n\rceil$.  We will ignore the fact that the best $n$ is not
+necessarily an integer, so of course it is not necessarily a power of 2 (as would be best for scrambled Sobol' points). We just study how the minimizing $n$ changes with $N$.  From here on, we denote the minimizer by $n$ not $\tilde n$.
+
+For $\theta>1/2$, the derivative of the interval width with respect to $n$ is
+\begin{align*}
+(1/2-\theta)\frac{A}{\sqrt{N}}n^{-1/2-\theta}\sqrt{2\log(1/\delta)}  + \frac{\log(1/\delta)}{3N}.
+\end{align*}
+This vanishes at 
+\begin{align*}
+n^{-\theta-1/2} = 
+\frac{\frac{\log(1/\delta)}{3N}}
+{(\theta-1/2)\frac{A}{\sqrt{N}}
+\sqrt{2\log(1/\delta)}}
+\end{align*}
+and so the optimal choice is
+\begin{align}\label{eq:goodn}
+n
+& = 
+\left(\frac
+{(\theta-1/2)\frac{A}{\sqrt{N}}
+\sqrt{2\log(1/\delta)}}{\frac{\log(1/\delta)}{3N}}\right)^{1/(\theta+1/2)}\notag\\
+& = 
+\left(\frac{3(\theta-1/2)A                                                                               \sqrt{2N}}{\sqrt{\log(1/\delta)}}\right)^{1/(\theta+1/2)}\\
+  &\propto N^{1/(2\theta+1)}.\notag
+\end{align}
+
+For $\theta=3/2$ we get $n = O(N^{1/4})$
+while for $\theta=1$, we get $n=O(N^{1/3})$.
+Note that with a better rate for $\sigma^2_n$
+we take smaller $n$. 
+We can understand this in terms of equation~\eqref{eq:thewidth}.
+The first term there grows smaller as either $n$ or $R$ increases
+while the second term responds only to $R$.  When RQMC is extremely
+effective the second term dominates and the oracle then increases $R$.
+
+If the oracle picks smaller $n$ for larger $\theta$ then we might
+wonder why it picks $n=1$ for the smallest value, $\theta=1/2$. 
+This stems from the factor $\theta-1/2$ in the constant of proportionality.
+For fixed $A$, $N$ and $\delta$ we could maximize~\eqref{eq:goodn} over $\theta$
+to see which rate gives the largest $n$.
+
+\subsection*{Width reduction from RQMC}
+
+Here we look at how much narrower the empirical Bernstein windows
+could be when using RQMC instead of MC.
+For MC we would take $n=1$
+while with RQMC, our oracle would use $n$ from \eqref{eq:goodn}.
+The ratio of these widths is
+\begin{align*}
+\rho &=\frac{\frac{2A}{\sqrt{N}}n^{1/2-\theta}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}}{
+\frac{2A}{\sqrt{N}}\sqrt{2\log(1/\delta)}  + \frac{2\log(1/\delta)}{3N}}\\
+&=\frac{3A\sqrt{N}n^{1/2-\theta}\sqrt{2\log(1/\delta)}  + n\log(1/\delta)}{
+{3A}{\sqrt{N}}\sqrt{2\log(1/\delta)}  + \log(1/\delta)}.
+\end{align*}
+
+
+Now
+\begin{align*}
+n^{1/2-\theta} 
+&= \left(\frac
+{3(\theta-1/2)A
+  \sqrt{2N}}{\sqrt{\log(1/\delta)}}\right)^{(1/2-\theta)/(\theta+1/2)}\\
+&= O( N^{(1/2-\theta)/(2\theta+1)}),
+\end{align*}
+as $N\to\infty$. So for $\theta>1/2$, the width ratio is
+\begin{align*}
+\rho&=\Bigl(
+\Theta(N^{1/2+(1/2-\theta)/(2\theta+1)})
++ \Theta( N^{1/(2\theta+1)})
+\Bigr)\Bigm/
+\Theta(N^{1/2})\\
+&=\Theta( N^{(1-2\theta)/(4\theta+2)}).
+\end{align*}
+
+For $\theta=1$, corresponding to a plain Koksma-Hlawka rate
+we get a ratio of $\Theta(N^{-1/6})$.
+For $\theta=3/2$, corresponding to a rate for smooth integrands
+we get a more favorable width ratio of $\Theta(N^{-1/4})$.
+The MC widths decay proportionally to $N^{1/2}$, so the
+RQMC widths decay proportionally to $N^{3/4}$.
+
+\section{Smooth one dimensional examples}
+
+For $Y=f(x)=x$ and $x\sim \runif[0,1]$, we can work out how the oracle's
+choice would behave.  We find that the optimal $n$ does indeed grow
+very slowly with $N$ and that the resulting window lengths
+decrease proportionally to $N^{-3/4}$.
+
+
+The random variable $Y$ has variance $1/12$.
+When $n$ is a power of two, then a nested uniform scramble for this setting is
+the same as stratified sampling, taking one value independently
+within each of $n$ equal length intervals. Then the RQMC variance is
+$$
+\frac{1}{12n^3}
+$$
+so $A=1/12$ and $\theta=3/2$.  
+%For scrambled Sobol' this rate requires $n$ to be a power of $2$.  
+%Otherwise I think we just
+%get $O(n^{-2})$ with a constant that depends on the ratio
+%between $n$ and the nearest power of $2$.
+The MC variance is $1/(12n)$.
+
+The oracle will get an interval of width
+\begin{align*}
+w_{\rqmc}&=\frac{1/6}{\sqrt{N}}n^{-1}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}.
+\end{align*}
+For $N = 2^m$ and $m=0,1,\dots,30$, we can work out the
+interval width for any value of $n$ that is a power of $2$
+between $1$ and $N$ inclusive. Table~\ref{tab:forx} shows
+how the width minimizing value of $n$ grows with $N$.
+For example, we have $n<4$ until $N=2048$ and we only choose
+$n=16$ once $N$ is $2^{19}$.  As expected, we see $n$ double
+once when $N$ doubles four times, once $N\ge128$. The width scales as $N^{3/4}$
+as expected.
+
+\begin{table}\centering
+\begin{tabular}{rrrrr}
+\toprule
+$\log_2(N)$&         $N$ & $n$    &    $w$ &$N^{3/4}w$\\
+\midrule 
+ 0&         1  &1& 2.41e+00 & 2.405113\\
+ 7&       128  &2& 4.92e$-$02 & 1.873616\\
+11&      2048  &4& 6.15e$-$03 & 1.873616\\
+15&     32768  &8& 7.69e$-$04 & 1.873616\\
+19&    524288 &16& 9.62e$-$05 & 1.873616\\
+23&   8388608 &32& 1.20e$-$05 & 1.873616\\
+27& 134217728 &64& 1.50e$-$06 & 1.873616\\
+\bottomrule
+\end{tabular}
+\caption{\label{tab:forx} For $f(x)=x$, this table shows optimal
+$n$ for each of several $N$, along with the empirical Bernstein
+width $w$ and $N^{3/4}w$. We only include value of $N$ for which
+$n$ has increased. It uses $\delta = 0.05$.
+}
+\end{table}
+
+
+
+This function has standardized fourth moment
+$$
+\kappa = \e((Y-1/2)^4)/\var(Y)^2 = 9/5
+$$
+which we can use in a prior method from GAIL.
+
+For other smooth functions on $[0,1]$, we can work out that
+the RQMC variance is approximately
+$$
+\frac1{12n^3}\int_0^1 f'(x)^2\rd x
+$$
+so we take $A = \int_0^1f'(x)^2\rd x/12$ along with $\theta=3/2$.
+For $f(x) = x\exp(x-1)$, we get $f'(x) = (x+1)\exp(x-1)$, so
+$$
+A =\frac1{12}\int_0^1 (x+1)^2\exp(2x-2)\rd x=\frac1{48}\Bigl(5-\frac{1}{e^2}\Bigr)
+$$
+(from WolframAlpha). With this value of $A$, we get the same values of $n$ for $N=2^m$ and $0\le m\le 30$ as we did for $f(x)=x$.
+\begin{verbatim}
+      m         N  n            w N^(3/4) w
+[1,]  0         1  1 2.493299e+00  2.493299
+[2,]  7       128  2 5.313224e-02  2.021928
+[3,] 11      2048  4 6.641530e-03  2.021928
+[4,] 15     32768  8 8.301913e-04  2.021928
+[5,] 19    524288 16 1.037739e-04  2.021928
+[6,] 23   8388608 32 1.297174e-05  2.021928
+[7,] 27 134217728 64 1.621467e-06  2.021928
+\end{verbatim}
+
+If $f$ is highly oscillatory then we find that larger $n$
+give better oracle widths than before.  Consider
+$$
+f(x) = \frac{1+\sin(2\pi\omega x)}2.
+$$
+Then $f'(x)^2=\pi^2\omega^2\cos(2\pi\omega x)^2$ and 
+$$
+A = \frac{\pi^2\omega^2}{12}\int_0^1\cos(2\pi\omega x)^2\rd x
+= \frac{\pi^2\omega^2}{96}\Bigl( \frac{\sin(4\pi\omega)}{\pi\omega}+4\Bigr)
+$$
+(again via WolframAlpha). Taking $\omega$ to be a positive integer, we get
+$A=\pi^2\omega^2/24$.
+If $\omega =5$, then $f$ goes through $5$ complete sinusoidal periods
+in $[0,1]$. We get $A=25\pi^2/24\doteq10.3$ and (some R output is)
+\begin{verbatim}
+       m         N    n            w N^(3/4) w
+ [1,]  0         1    1 5.232693e+01  52.32693
+ [2,]  1         2    2 1.979142e+01  33.28507
+ [3,]  2         4    4 8.288377e+00  23.44307
+ [4,]  3         8    8 4.221438e+00  20.08066
+ [5,]  5        32   16 1.554648e+00  20.91677
+ [6,]  9       512   32 1.943310e-01  20.91677
+ [7,] 13      8192   64 2.429138e-02  20.91677
+ [8,] 17    131072  128 3.036422e-03  20.91677
+ [9,] 21   2097152  256 3.795528e-04  20.91677
+[10,] 25  33554432  512 4.744410e-05  20.91677
+[11,] 29 536870912 1024 5.930512e-06  20.91677
+\end{verbatim} 
+For this highly oscillatory case we see $n=N$ for small $N$ and
+then eventual slow growth in $n$ with $N$.
+
+
+\bibliographystyle{plain}
+\bibliography{FJH25}
+\end{document}

@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{natbib}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\newcommand{\art}[1]{\begingroup\color{blue}#1\endgroup}
+\newcommand{\aadit}[1]{\begingroup\color{orange}#1\endgroup}
+\newcommand{\fred}[1]{\begingroup\color{red}#1\endgroup}
+\newcommand{\alexei}[1]{\begingroup\color{green}#1\endgroup}
+
+% Lets make it look like writing on a blackboards
+% not a 1970s typewriter!
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\e}{\mathbb{E}}
+\newcommand{\var}{\mathrm{Var}}
+
+% commands in lower case give less carpal trouble
+\newcommand{\mc}{\mathrm{MC}}
+\newcommand{\rqmc}{\mathrm{RQMC}}
+\newcommand{\runif}{\mathbb{U}}
+\newcommand{\rd}{\,\mathrm{d}}
+\newtheorem{theorem}{Theorem}
+\renewcommand{\thetheorem}{3} 
+\begin{document}
+\section{Introduction}
+This document summarizes some results from \cite{WauRam24a}, which we can possibly analyze in the way the Bennett inequality was analyzed. The \textbf{[PrPl-EB-CI]} and \textbf{[Hedged-CI]} described in the following sections has been used in the simulations I've done till now.
+\section{The EB CS and CI}
+The EB CI described in the paper is tighter than that of Maurer and Pontil. The CI widths converge exactly to the oracle Bernstein width. 
+\setcounter{equation}{12}
+\begin{equation} \label{eq:13}
+    \text{M}^{\text{PrPl-EB}}_t (m) := \prod_{i=1}^{t} \exp\left( \lambda_i (X_i - m) - v_i \psi_E(\lambda_i) \right),
+\end{equation}
+where 
+$
+    v_i := 4 (X_i - \hat{\mu}_{i-1})^2
+$
+and
+\begin{equation} \label{eq:14}
+    \psi_E(\lambda) := \frac{-\log(1 - \lambda) - \lambda}{4} \quad \text{for} \ \lambda \in [0, 1).
+\end{equation}
+\renewcommand{\thetheorem}{2} 
+\begin{theorem}[Predictable plug-in empirical Bernstein CS (PrPl-EB)] \label{thm:PrPl-EB}
+Suppose \( (X_t)_{t=1}^{\infty} \sim P \) for some \( P \in P^{\mu} \). For any \( (0,1) \)-valued predictable sequence \( (\lambda_t)_{t=1}^{\infty} \),  \\
+
+$ C_t^{\text{PrPl-EB}} :=
+   \left( \frac{\sum_{i=1}^{t} \lambda_i X_i}{\sum_{i=1}^{t} \lambda_i}
+    \pm \frac{\log (2/\alpha) + \sum_{i=1}^{t} v_i \psi_E(\lambda_i)}{\sum_{i=1}^{t} \lambda_i} \right)$ \\
+    
+forms a \( (1 - \alpha) \)-CS for \( \mu \),  \\
+
+as does its running intersection, \( \bigcap_{i \leq t} C_i^{\text{PrPl-EB}} \).\\
+
+They recommend the predictable plug-in sequence \( (\lambda_t^{\text{PrPl-EB}})_{t=1}^{\infty} \) given by
+\begin{equation} \label{eq:15}
+    \lambda_t^{\text{PrPl-EB}} := 
+    \sqrt{\frac{2 \log(2/\alpha)}{\hat{\sigma}^2_{t-1} t \log(1 + t)}} \
+    \wedge \ c,  \quad
+    \hat{\sigma}^2_t := \frac{\frac{1}{4} + \sum_{i=1}^{t} (X_i - \hat{\mu}_i)^2}{t+1},  
+    \quad \hat{\mu}_t := \frac{\frac{1}{2} + \sum_{i=1}^{t} X_i}{t+1}.
+\end{equation}
+for some \( c \in [0,1) \) (a reasonable default is \( 1/2 \;\text{or}\; 3/4 \)).
+\end{theorem}
+
+\noindent \textbf{Remark 1} Theorem 2 yields computationally and statistically efficient empirical Bernstein-type confidence intervals (CIs) for a fixed sample size \( n \). Recalling \eqref{eq:15}, they recommend using \( \bigcap_{i \leq n} C_i^{\text{PrPl-EB}} \) along with the predictable sequence  
+\begin{equation} \label{eq:16}
+    \lambda_t^{\text{PrPl-EB}(n)} := 
+    \sqrt{\frac{2 \log(2/\alpha)}{n \hat{\sigma}^2_{t-1}}} \wedge c.
+\end{equation}
+They call the resulting confidence interval the ‘predictable plug-in empirical Bernstein confidence interval’ or \textbf{[PrPl-EB-CI]} for short. \\
+
+\noindent In i.i.d. settings, the width of [PrPl-EB-CI] scales with the true (unknown) standard deviation:  
+\begin{equation} \label{eq:17}
+    \sqrt{n} \left( \frac{{\log (2/\alpha) + \sum_{i=1}^{n} v_i \psi_E(\lambda_i)}}{\sum_{i=1}^{n} \lambda_i} \right)
+    \xrightarrow{\text{a.s.}} 
+    \sigma \sqrt{2 \log (2/\alpha)}.
+\end{equation}
+
+\noindent \eqref{eq:17} is the same asymptotic behavior that one would observe for CIs based on
+Bernstein’s or Bennett’s inequalities. This is in contrast to the empirical Bernstein CIs of Maurer and
+Pontil, whose limit would be \( \sigma \sqrt{2 \log (4/\alpha)}\).
+
+\section{The Hedged Capital CS and CI}
+\setcounter{equation}{23}
+\begin{equation} \label{eq:24}
+\begin{aligned}
+    K^\pm_t (m) &:= \max \left\{ \theta K^+_t (m), (1 - \theta) K^-_t (m) \right\}, \\
+    \text{where} \quad K^+_t (m) &:= \prod_{i=1}^{t} \left( 1 + \lambda^+_i (m) \cdot (X_i - m) \right), \\
+    \text{and} \quad K^-_t (m) &:= \prod_{i=1}^{t} \left( 1 - \lambda^-_i (m) \cdot (X_i - m) \right).
+\end{aligned}
+\end{equation}
+with \( \theta, m \in [0,1] \).
+
+\begin{theorem}[Hedged capital CS (Hedged)]  
+Suppose \( (X_t)_{t=1}^{\infty} \sim P \) for some \( P \in P^{\mu} \). Let \( (\tilde{\lambda}^+_t)_{t=1}^{\infty} \) and \( (\tilde{\lambda}^-_t)_{t=1}^{\infty} \) be real-valued predictable sequences not depending on \( m \), and for each \( t \geq 1 \) define  
+\begin{equation}  
+\lambda^+_t (m) := |\tilde{\lambda}^+_t| \wedge \frac{c}{m}, \quad  
+\lambda^-_t (m) := |\tilde{\lambda}^-_t| \wedge \frac{c}{1 - m},  
+\end{equation}  
+for some \( c \in [0,1) \) (some reasonable defaults being \( c = 1/2 \) or \( 3/4 \)). Then\\
+
+$ B^\pm_t := \{ m \in [0,1] : K^\pm_t (m) < 1/\alpha \} $ forms a \( (1 - \alpha) \)-CS for \( \mu \), \\
+
+as does its running intersection \( \bigcap_{i \leq t} B^\pm_i \). Furthermore, \( B^\pm_t \) is an interval for each \( t \geq 1 \).  
+\end{theorem}  
+It is recommended to set \( \tilde{\lambda}^+_t = \tilde{\lambda}^-_t = \lambda^{\text{PrPl}\pm}_t \) as
+\begin{equation} \label{eq:26}
+   \lambda^{\text{PrPl}\pm}_t := \sqrt{\frac{2 \log (\frac{2}{\alpha})}{\hat{\sigma}^2_{t-1}t \log (t + 1)}}, \quad \hat{\sigma}^2_t := \frac{\frac{1}{4} + \sum_{i=1}^{t} (X_i - \hat{\mu}_i)^2}{t + 1}, \quad \hat{\mu}_t := \frac{\frac{1}{2}+ \sum_{i=1}^{t} X_i}{t + 1},
+\end{equation}
+for each \( t \geq 1 \), and truncation level \( c := \frac{1}{2} \, \text{or} \, \frac{3}{4}
+ \). \\
+ 
+\noindent \textbf{Remark 3} \quad Theorem 3 yields tight hedged CIs for a fixed sample size \( n \). Recalling (26), it is recommended to use \( \bigcap_{i \leq n} B^\pm_i \), and setting \( \tilde{\lambda}^+_t = \tilde{\lambda}^-_t = \tilde{\lambda}^\pm_t \) given by
+\begin{equation} \label{eq:27}
+    \tilde{\lambda}^\pm_t := \sqrt{\frac{2 \log( \frac{2}{\alpha})}{n \hat{\sigma}^2_{t-1}}}.
+\end{equation}
+The resulting CI is referred as the ‘hedged capital confidence interval’ or \textbf{[Hedged-CI]} for short. \\
+
+\noindent Bets can be chosen such that hedged capital CSs and CIs converge at the optimal rates of \( O \left( \sqrt\frac{\log \log t}{t} \right) \) and \( O \left( \frac{1}{\sqrt{n}} \right) \) respectively. \\ 
+
+\noindent The recommendations above don't satisfy the assumptions proving the convergence rate of the Hedged CIs. Yet, the above recommendations tighten the CIs (found through simulations), especially in low-variance, asymmetric settings.
+
+\bibliographystyle{plain}
+\bibliography{FJH25}
+\end{document}
