@@ -3,7 +3,7 @@
 \usepackage{natbib}
 \usepackage{booktabs}
 \usepackage{xcolor}
-
+\usepackage{hyperref}
 \newcommand{\art}[1]{\begingroup\color{blue}#1\endgroup}
 \newcommand{\aadit}[1]{\begingroup\color{orange}#1\endgroup}
 \newcommand{\fred}[1]{\begingroup\color{red}#1\endgroup}
@@ -47,17 +47,20 @@ and
 \begin{theorem}[Predictable plug-in empirical Bernstein CS (PrPl-EB)] \label{thm:PrPl-EB}
 Suppose \( (X_t)_{t=1}^{\infty} \sim P \) for some \( P \in P^{\mu} \). For any \( (0,1) \)-valued predictable sequence \( (\lambda_t)_{t=1}^{\infty} \),  \\
 
-$ C_t^{\text{PrPl-EB}} :=
+$ C_t^{\mathrm{PrPl-EB}} :=
    \left( \frac{\sum_{i=1}^{t} \lambda_i X_i}{\sum_{i=1}^{t} \lambda_i}
     \pm \frac{\log (2/\alpha) + \sum_{i=1}^{t} v_i \psi_E(\lambda_i)}{\sum_{i=1}^{t} \lambda_i} \right)$ \\
     
 forms a \( (1 - \alpha) \)-CS for \( \mu \),  \\
 
-as does its running intersection, \( \bigcap_{i \leq t} C_i^{\text{PrPl-EB}} \).\\
+as does its running intersection, \( \bigcap_{i \leq t} C_i^{\mathrm{PrPl-EB}} \).\\
 
-They recommend the predictable plug-in sequence \( (\lambda_t^{\text{PrPl-EB}})_{t=1}^{\infty} \) given by
+% \text turns into italics within a theorem statement,
+% so we want \mathrm
+
+They recommend the predictable plug-in sequence \( (\lambda_t^{\mathrm{PrPl-EB}})_{t=1}^{\infty} \) given by
 \begin{equation} \label{eq:15}
-    \lambda_t^{\text{PrPl-EB}} := 
+    \lambda_t^{\mathrm{PrPl-EB}} := 
     \sqrt{\frac{2 \log(2/\alpha)}{\hat{\sigma}^2_{t-1} t \log(1 + t)}} \
     \wedge \ c,  \quad
     \hat{\sigma}^2_t := \frac{\frac{1}{4} + \sum_{i=1}^{t} (X_i - \hat{\mu}_i)^2}{t+1},  
@@ -73,7 +76,7 @@ for some \( c \in [0,1) \) (a reasonable default is \( 1/2 \;\text{or}\; 3/4 \))
 \end{equation}
 They call the resulting confidence interval the ‘predictable plug-in empirical Bernstein confidence interval’ or \textbf{[PrPl-EB-CI]} for short. \\
 
-\noindent In i.i.d. settings, the width of [PrPl-EB-CI] scales with the true (unknown) standard deviation:  
+\noindent In i.i.d.\ settings, the width of [PrPl-EB-CI] scales with the true (unknown) standard deviation:  
 \begin{equation} \label{eq:17}
     \sqrt{n} \left( \frac{{\log (2/\alpha) + \sum_{i=1}^{n} v_i \psi_E(\lambda_i)}}{\sum_{i=1}^{n} \lambda_i} \right)
     \xrightarrow{\text{a.s.}} 
@@ -83,6 +86,15 @@ They call the resulting confidence interval the ‘predictable plug-in empirical
 \noindent \eqref{eq:17} is the same asymptotic behavior that one would observe for CIs based on
 Bernstein’s or Bennett’s inequalities. This is in contrast to the empirical Bernstein CIs of Maurer and
 Pontil, whose limit would be \( \sigma \sqrt{2 \log (4/\alpha)}\).
+
+\art{Let's consider $\alpha=0.05$. The Maurer and Pontil intervals will be asymptotically wider than the betting intervals by a factor of
+$$
+\frac{\sigma\sqrt{2\log(4/\alpha)}}{\sigma\sqrt{2\log(2/\alpha)}}
+=\frac{\sqrt{\log(40)}}{\sqrt{\log(20)}} \doteq 1.11.
+$$
+Therefore we expect the betting intervals to show the same asymptotic behavior that we see for the Maurer and Pontil intervals with two adjustments with a width reduction by about 11\%.}
+
+
 
 \section{The Hedged Capital CS and CI}
 \setcounter{equation}{23}
@@ -122,7 +134,159 @@ The resulting CI is referred as the ‘hedged capital confidence interval’ or 
 
 \noindent Bets can be chosen such that hedged capital CSs and CIs converge at the optimal rates of \( O \left( \sqrt\frac{\log \log t}{t} \right) \) and \( O \left( \frac{1}{\sqrt{n}} \right) \) respectively. \\ 
 
-\noindent The recommendations above don't satisfy the assumptions proving the convergence rate of the Hedged CIs. Yet, the above recommendations tighten the CIs (found through simulations), especially in low-variance, asymmetric settings.
+\noindent The recommendations above don't satisfy the assumptions proving the convergence rate of the Hedged CIs. Yet, the above recommendations tighten the CIs (found through simulations), especially in low-variance, asymmetric settings. 
+
+\section{Analyzing the width of Betting CI asymptotically}
+
+From \href{https://arxiv.org/pdf/2310.01547}{arXiv:2310.01547}. we use the following:
+\setcounter{equation}{6}
+\begin{equation}
+\text{KL}^{a}_{\text{inf}}(P^*, m) = \sup_{\lambda \in S_a} \mathbb{E}\left[\log\left(1 + \lambda (X - m)\right)\right], \quad \text{where} \quad S_+ = \left\{ \frac{-1}{1-m},0 \right\}, \quad S_- = \left\{ 0, \frac{1}{m} \right\}.
+\end{equation}
+
+\art{I see that their $\sup$ keeps the KL quantities bounded.}
+
+For any \( m \in [0, 1] \), we also introduce their corresponding optimal betting fractions:
+
+\begin{equation}
+\lambda^*_a(m) \in \arg \max_{\lambda \in S_a} \mathbb{E}_{X \sim P^*} \left[\log\left(1 + \lambda (X - m)\right)\right], \quad \text{for } a \in \{+, -\}. 
+\end{equation}
+
+We can now state the result characterizing the width of the betting CI:
+
+\textbf{Theorem 4.6.} Consider a betting CI constructed using the mixture betting strategy of Definition 2.3. Then, the width of such a level-$(1 - \alpha/3)$ CI, denoted by \( w_{\text{bet}}(n, P^*, \alpha/3) \), satisfies:
+
+\begin{equation}
+w_{\text{bet}}(n, P^*, \alpha/3) \leq 2 \max \left( KL^+_{\text{inf}}(\hat{P}_n, \cdot)^{-1} \Big( \log\left( \frac{3n^2}{\alpha} \right) \Big) - \mu, \, \mu - KL^-_{\text{inf}}(\hat{P}_n, \cdot)^{-1} \Big( \log\left( \frac{3n^2}{\alpha} \right) \Big) \right)
+, 
+\end{equation}
+where \( \hat{P}_n, \) denotes the empirical distribution of \( \{X_1, \dots, X_n\} \).
+
+Since the above upper bound on \( w_{\text{bet}}(n, P^*, \alpha/3) \) is random, we next derive a deterministic bound on it, that holds with probability at least \( 1 - \alpha \), for \( n \) large enough (precise conditions in Appendix C.2.4):
+
+\begin{equation}
+w_{\text{bet}}(n, P^*, \alpha/3) \leq \max \left( KL^+_{\text{inf}}(P^*, \cdot)^{-1}(b(n, \alpha)) - \mu, \, \mu - KL^-_{\text{inf}}(P^*, \cdot)^{-1}(b(n, \alpha)) \right) + \frac{1}{n^2},
+\end{equation}
+where 
+\[
+b(n, \alpha) = \frac{\log\left(\frac{3n^2}{\alpha}\right)}{n} + \frac{9 \log\left(\frac{3n^2}{\alpha}\right)}{n \sigma^2} = O\left( \frac{\log(n/\alpha)}{n} \right).
+\]\\
+
+The large enough $n$ condition is such that $8n^{\frac{3}{2}}\sqrt{2\log\Big(\frac{3n^c}{\alpha}\Big)} + 2 \leq \frac{n^2}{8}$, where $c < 2$. \\
+
+\noindent We now analyze the deterministic bound by replacing $n$ with $\frac{N}{n}$, where $\frac{N}{n} = R$ \\
+
+
+\setcounter{equation}{0}
+For the $KL^+_{\text{inf}}$, we assume, $m_1 > \mu$ and set $\lambda = \frac{-1}{1-m}$.
+Then,
+\begin{equation}
+    \mathbb{E}\Big(\log\Big(1 + \frac{m_1 - X}{1-m_1}\Big)\Big) = \mathbb{E}\Big(\log\Big(\frac{1 - X}{m_1}\Big)\Big) = \mathbb{E}(\log(1 - X)) - \log(m_1)
+\end{equation}
+\art{It's not obvious to me why we can pick this $\lambda$ for $m_1>\mu$. Doesn't the curvature of the logarithm function complicate that step?}\\
+\aadit{Since we are taking the expectation of the $\log(1 + \lambda(X - m_1))$, to maximize the expectation we need to maximize the stuff inside the log so we need to maximize $\lambda(X - m_1)$. Since $m_1 > \mu$, $\mathbb{E}(X - m_1) < 0$. The $\lambda$ I chose is the greatest negative value, so it would give the greatest value for $\mathbb{E}(\lambda(X - m_1))$, indicating greater values for the stuff inside the log in general. Is this not correct? I am not trying to assume at all that $\mathbb{E}(\log(X) = \log(\mathbb{E}(X))$} \art{For the $+$ case we want the larger of $\e(\log(1+0\times(X-m)))=0$ and 
+$$\e\Bigl(\log\Bigl(1+\frac{-1}{1-m}\times(X-m)\Bigr)\Bigr) =\e\Bigl(\log\Bigl( \frac{1-X}{1-m}\Bigr)\Bigr)$$
+So I think we need to know the sign of this expectation. If $m>\mu$, can we then conclude that the expected logarithm above is positive? I suspect not.}\\
+
+Solving for $m_1$, substituting in $An^{-\theta}$ for the variance in $b(R,\alpha)$, finding where the derivative of $m_1 - \mu + \frac{n^2}{N^2}$ is $0$ and doing some algebra, we get
+\begin{equation} \label{or_m1}
+A \ln(10) \log\left( \frac{3 N^2}{n^2 \alpha} \right) - 2A + 9\ln(10)(\theta + 1)n^{\theta} \log\left( \frac{3 N^2}{n^2 \alpha} \right) - 18n^\theta = \frac{2 An \left( \frac{3 N^2}{n^2 \alpha} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}{N \cdot 10^{\mathbb{E}( \log(1 - X))}}
+\end{equation}
+where derivative of $b(R,\alpha)$ with respect to $n$ is 
+\begin{equation}
+    \frac{\log\Big(\frac{3N^2}{n^2\alpha}\Big)}{N} - \frac{2}{N\ln(10)} + \frac{9(\theta + 1)n^\theta\log\Big(\frac{3N^2}{n^2\alpha}\Big)}{AN} - \frac{18n^\theta}{\ln(10)AN}
+\end{equation}
+The derivative of $m_1 - \mu + \frac{n^2}{N^2}$ is 
+\begin{equation}
+    \frac{-\ln(10)10^{\mathbb{E}\Big(\log(1 - X)\Big)}\frac{db(R,\alpha)}{dn}}{10^{b(R,\alpha)}} + \frac{2n}{N^2}
+\end{equation}
+and 
+\begin{equation}
+    b(R,\alpha) = \frac{n\log\Big(\frac{3N^2}{n^2\alpha}\Big)}{N} + \frac{9n^{\theta + 1}\log\Big(\frac{3N^2}{n^2\alpha}\Big)}{AN}
+\end{equation}
+Note that
+\begin{equation}
+m_1 = \frac{10^{\mathbb{E} \left( \log(1 - X) \right)}}{\left( \frac{3 N^2}{n^2 \alpha} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}
+\end{equation}
+ \aadit{Can we show that $m_1 + \frac{n^2}{N^2}$ is always increasing with increasing $n$? We know that$\frac{n^2}{N^2}$ is increasing with greater $n$?} \\\\
+\noindent For order purposes (assuming $n$ and $N$ approach $\infty$)  we modify equation \eqref{or_m1} in the following way:
+\begin{equation}
+\log\left( \frac{N^2}{n^2} \right) +n^{\theta} \log\left( \frac{N^2}{n^2} \right) -n^{\theta} =\frac{n \left( \frac{N^2}{n^2} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}{N}
+\end{equation}
+\begin{equation}
+\log(N) - \log(n) + n^\theta (\log(N) - \log(n)) - n^\theta = \left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(1 + n^\theta) (\log(N) - \log(n)) - n^\theta = \left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n)) - n^\theta = \left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n) - 1) = \left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n)) = \left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+-(n^\theta) ( \log(n)) (n^{\frac{A n + 18 n^{\theta + 1}}{A n}}) = N ^{\frac{A n + 18 n^{\theta + 1}}{A n}} - (n^\theta) ( \log(N)) (n^{\frac{A n + 18 n^{\theta + 1}}{A n}})
+\end{equation}
+\begin{equation}
+-(n^{\frac{A n + 18 n^{\theta + 1} + An\theta}{A n}}) ( \log(n))  = N ^{\frac{A n + 18 n^{\theta + 1}}{A n}} - (n^{\frac{A n + 18 n^{\theta + 1} + An\theta}{A n}}) ( \log(N))
+\end{equation}
+
+\aadit{Not sure where to go from here?} \\\\
+
+
+
+
+
+
+
+\noindent For the $KL^-_{\text{inf}}$, we assume, $m_2 < \mu$ and set $\lambda = \frac{1}{m}$.
+Then,
+\begin{equation}
+    \mathbb{E}\Big(\log\Big(1 + \frac{X - m_2}{m_2}\Big)\Big) = \mathbb{E}\Big(\log\Big(\frac{X}{m_2}\Big)\Big) = \mathbb{E}(\log(X)) - \log(m_2)
+\end{equation}
+Using the same process as we did for $KL^+_{\text{inf}}$, we get: 
+\begin{equation} \label{or_m2}
+A \ln(10) \log\left( \frac{3 N^2}{n^2 \alpha} \right) - 2A + 9\ln(10)(\theta + 1)n^{\theta} \log\left( \frac{3 N^2}{n^2 \alpha} \right) - 18n^\theta = \frac{-2 An \left( \frac{3 N^2}{n^2 \alpha} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}{N \cdot 10^{\mathbb{E}( \log(X))}}
+\end{equation}
+The derivative of $\mu - m_2 + \frac{n^2}{N^2}$ is 
+\begin{equation}
+    \frac{\ln(10)10^{\mathbb{E}\Big(\log(X)\Big)}\frac{db(R,\alpha)}{dn}}{10^{b(R,\alpha)}} + \frac{2n}{N^2}
+\end{equation}
+Note that
+\begin{equation}
+-m_2 = \frac{-10^{\mathbb{E} \left( \log(X) \right)}}{\left( \frac{3 N^2}{n^2 \alpha} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}
+\end{equation} 
+\aadit{Can we show that $-m_2 + \frac{n^2}{N^2}$ is always increasing with increasing $n$? We know that$\frac{n^2}{N^2}$ is increasing with greater $n$?} \\ \\
+\noindent For order purposes (assuming $n$ and $N$ approach $\infty$) we modify equation \eqref{or_m2} in the following way:
+\begin{equation}
+\log\left( \frac{N^2}{n^2} \right) +n^{\theta} \log\left( \frac{N^2}{n^2} \right) -n^{\theta} =\frac{-n \left( \frac{N^2}{n^2} \right)^{\frac{A n + 9 n^{\theta + 1}}{A n}}}{N}
+\end{equation}
+\begin{equation}
+\log(N) - \log(n) + n^\theta (\log(N) - \log(n)) - n^\theta = -\left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(1 + n^\theta) (\log(N) - \log(n)) - n^\theta = -\left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n)) - n^\theta = -\left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n) - 1) = -\left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+(n^\theta) (\log(N) - \log(n)) = -\left( \frac{N}{n} \right)^{\frac{A n + 18 n^{\theta + 1}}{A n}}
+\end{equation}
+\begin{equation}
+-(n^\theta) ( \log(n)) (n^{\frac{A n + 18 n^{\theta + 1}}{A n}}) = -N ^{\frac{A n + 18 n^{\theta + 1}}{A n}} - (n^\theta) ( \log(N)) (n^{\frac{A n + 18 n^{\theta + 1}}{A n}})
+\end{equation}
+\begin{equation}
+(n^{\frac{A n + 18 n^{\theta + 1} + An\theta}{A n}}) ( \log(n))  = N ^{\frac{A n + 18 n^{\theta + 1}}{A n}} + (n^{\frac{A n + 18 n^{\theta + 1} + An\theta}{A n}}) ( \log(N))
+\end{equation}
+\aadit{Not sure where to go from here?}
 
 \bibliographystyle{plain}
 \bibliography{FJH25}

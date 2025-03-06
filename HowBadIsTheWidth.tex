@@ -1,5 +1,5 @@
 \documentclass{amsart}
-\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,color}
+\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,xcolor}  % changed color to xcolor
 \usepackage[hyphens]{url}
 \usepackage[utf8]{inputenc}
 \usepackage{esdiff}
@@ -16,6 +16,9 @@
 \algnewcommand\RETURN{\State \textbf{Return }}
 
 \newcommand{\rd}{\,\mathrm{d}}
+
+\newcommand{\art}[1]{{\color{blue}#1}}
+
 
 \begin{document}
 \title{Constructing a Worst Case for Confidence Intervals of Bounded Random Variables}
@@ -37,55 +40,61 @@
 
 Define a random variable $Y$ such that 
 \begin{equation*}
-    \Prob(Y = 1) = p, \quad \Prob(Y=-1) = 1-p, \qquad \text{for some } p \in [0,1].
+    \Prob(Y = 1) = p, \quad \Prob(Y=0) = 1-p, \qquad \text{for some } p \in [0,1].
 \end{equation*}
 Note that 
 \begin{align*}
-    \mu : = \Ex(Y) & = p - (1-p) = 2 p - 1, \\
-    \Ex(Y^2) & = 1, \\
-    \sigma^2 : = \var(Y) & = \Ex(Y^2) - \mu^2 = 1 - (2p-1)^2 = 4p(1-p)\\
-    \Ex(Y^3) & = \Ex(Y) =  2p -1, \\
-    \Ex[(Y - \mu)^4] & = p[1-(2p-1)]^4 + (1-p)[-1 - (2p-1)]^4 \\
-    & = p(2 - 2p)^4 + (1-p)(-2p)^4 \\
-    & = 16p(1-p)[(1-p)^3 + p^3] \\
-    & = 16p(1-p)(1 - 3p + 3 p^2) \\
+    \mu : = \Ex(Y) & = p, \\
+    \Ex(Y^2) & = p, \\
+    \sigma^2 : = \var(Y) & = \Ex(Y^2) - \mu^2 = p - p^2 = p(1-p)\\
+    \Ex(Y^3) & = \Ex(Y) =  p, \\
+    \Ex[(Y - \mu)^4] & = p(1-p)^4 + (1-p)(0 - p)^4 \\
+    & = p(1 - p)[(1-p)^3 + p^3] \\
+    & = p(1-p)(1 - 3p + 3 p^2) \\
     \kappa : = \frac{\Ex[(Y - \mu)^4]}{\sigma^4} & = 
     \frac{1 - 3p + 3 p^2}{p(1-p)}
 \end{align*}
 Thus, the kurtosis can range from $1$, when $p = 1/2$ to $\infty$ when $p = 0$ or $p=1$.
 
-Suppose we take an IID sample $Y_1, \ldots, Y_N$.  Let $M$ of the values be $1$ and $N-M$ be $-1$.  Then our sample mean is 
+
+Suppose we take an IID sample $Y_1, \ldots, Y_m$.  Let $L$ of the values be $1$ and $m - L$ be $0$.  Then our sample mean is 
 \begin{equation*}
-    \hmu_N := \frac 1N \sum_{i=1}^N Y_i 
-    = \frac{M - (N- M)}{N} =
-    \frac{2M -N}{N} =  2 \hp -1
+    \hmu_m := \frac 1m \sum_{i=1}^m Y_i 
+    = \frac{L}{m} =  \hp
 \end{equation*}
-where $\hp : = M/N$.
+where $\hp : = L/m$.
 
 Can we show that for some choice of $p$
 \[
-\Prob\Bigl(\lvert \mu - \hmu_N \rvert > \frac{c \log(1/\alpha)}{N} \Bigr) \ge \alpha
+\Prob\Bigl(\lvert \mu - \hmu_m \rvert > \frac{c \log(1/\alpha)}{m} \Bigr) \ge \alpha
 \]
 for some $c$, meaning that the $1-\alpha$ confidence interval will always be $\Order(\log(1/\alpha)/n)$ for bounded random variables?
 
+\art{There are lots of inequalities for a binomial random variable if we take $Y_i\in\{0,1\}$ instead. Doing that won't change the kurtosis. Shorack and Wellner's empirical processes book has some inequalities on page 440. However, few of those are about lower bounds on tail probabilities. They mostly do upper bounds. They like to handle one tail at a time.  Maybe we can find a bigger collection of inequalities for the binomial.  I'm a bit puzzled by the $m$ in the denominator where I was expecting $\sqrt{m}$. BTW, if you're ever looking for inequalities about the Poisson distribution, that book has some very nice ones. }
+
 This is equivalent to
 \[
-\Prob\Bigl(\lvert \mu - \hmu_N \rvert > \frac{c \beta}{N} \Bigr) \ge \exp(-\beta)
+\Prob\Bigl(\lvert \mu - \hmu_m \rvert > \frac{c \beta}{m} \Bigr) \ge \exp(-\beta)
 \]
 
 Note that 
 \[
-N(\mu - \hmu_N)  = 2N(p - \hp) = 2(m - M)
+m(\mu - \hmu_m)  = m(p - \hp) = \ell - L
 \]
-where $m : = Np$ is not necessarily an integer.
+where $\ell : = mp$ is not necessarily an integer.
 Moreover, 
 \begin{align*}
-    \MoveEqLeft \Prob(\lvert \mu - \hmu_N \rvert > b/N) \\
-    &= \Prob[ m - M < -b/2 \text{ or } m - M >  b/2] \\
-    &= \Prob[ M < m - b/2 \text{ or } M > m + b/2] \\
-    & = \sum_{0 \le l  < m - b/2}  \binom{N}{l} p^{l}(1-p)^{N-l} 
-    + \sum_{m + b/2 < l \le N}  \binom{N}{l} p^l(1-p)^{n-l}
+    \MoveEqLeft \Prob(\lvert \mu - \hmu_m \rvert > b/m) \\
+    &= \Prob[ \ell - L < -b/2 \text{ or } \ell - L >  b/2] \\
+    &= \Prob[ L < \ell - b/2 \text{ or } L > \ell + b/2] \\
+    & = \sum_{0 \le l  < \ell - b/2}  \binom{m}{l} p^{l}(1-p)^{m-l} 
+    + \sum_{\ell + b/2 < l \le m}  \binom{m}{l} p^l(1-p)^{n-l}
 \end{align*}
+
+\bigskip
+
+BELOW IS A WORK IN PROGRESS
+
 
 Thus, e.g., for $p < 1/N$ and $b \le 2pN $
 \[
@@ -97,6 +106,14 @@ Let $f(x) = \exp(Nx) - (1-x)^N$.  Note that $f(0) =0$ and
 \[
 f'(x) = N \exp(Nx) - N(1-x)^{N-1}
 \]
+
+\section{How Bad Are the CIs for Bounded Kurtosis}
+
+\cite{HicEtal14a} derived a finite sample confidence interval assuming bounded kurtosis.
+
+
+
+
 \bibliographystyle{amsalpha}
 \bibliography{FJH25,FJHown25}
 

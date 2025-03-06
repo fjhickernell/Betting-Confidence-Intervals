@@ -1,5 +1,6 @@
 \documentclass{amsart}
-\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,color}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,xcolor}
 \usepackage[hyphens]{url}
 \usepackage[utf8]{inputenc}
 \usepackage{esdiff}
@@ -15,7 +16,14 @@
 \algnewcommand\INPUT{\item[\algorithmicinput]}
 \algnewcommand\RETURN{\State \textbf{Return }}
 
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
 \newcommand{\rd}{\,\mathrm{d}}
+
+\newcommand{\art}[1]{{\color{blue}#1}}
 
 \begin{document}
 \title{Best QMC Sample Sizes for Confidence Intervals/Sequences Based on Replications}
@@ -44,18 +52,24 @@
 \begin{itemize}
     \item Survey finite sample confidence intervals and/or sequences and determine what the optimal $n$ needs to be for fixed budget $N$.
     \begin{itemize}
-        \item Art can you put your note on Bennett's inequality in this Overleaf in LaTeX?  I have the pdf only.  This will be a good guide for the other bounds
+        \item Art can you put your note on Bennett's inequality in this Overleaf in LaTeX?  I have the pdf only.  This will be a good guide for the other bounds \art{That is now in the file AnOraclesRate.tex.}
         \item We might also look at Bernstein, Hoeffding, and ???
+        \art{Maybe.  However if they don't involve $\sigma^2_n$, then we will have a hard time showing off what RQMC can do. RQMC lowers the variance and then the empirical Bernstein method takes advantage of that.}
         \item It seems that there is a $1/R$ term in the width of the confidence interval that may drive $n$ to be a small power of $N$.  This seems to make Bennett different than CLT.  Is this always true?
-        \item We can also look at \cite{HicEtal14a}, which assumes a bounded kurtosis.
+        \art{I think something like that will always be true when we get a non-asymptotic coverage. The CLT is only asymptotic.}
+        \item We can also look at \cite{HicEtal14a}, which assumes a bounded kurtosis. \art{I have put the kurtosis of the two examples $f(x)=x$ and $f(x) = 1\{x<1/3\}$ in the Oracle doc.}
     \end{itemize} 
 \item Some questions/comments (including the \textbf{AnOraclesRate.tex}):
     \begin{itemize}
         \item How were the MC widths and QMC widths decay for $\theta = 3/2$ determined? I was unable to understand the math.
+        \art{For one dimension and $n$ equal to a power of two, we know that a nested uniform scramble of a Sobol' sequence will put exactly one point uniformly distributed within each interval $[(i-1)/n,i/n)$ for $i=1,\dots,n$ and they are statistically independent. Then we can get the variance by calculus. The random linear scramble with digital shift does not sample independently this way, but it is known to have the same variance.  It also puts one point inside each interval but there are subtle dependencies among them.}
         \item Since $An^{-\theta} = \sigma_n$, why isn't the square root of the $\sigma^2_n$ taken for $A$? For e.g, why is it 12 and not $\sqrt{12}$ for $f(x) = x$, and similarly why isn't $\sqrt{\frac1{12}\int_0^1 f'(x)^2\rd x}$ taken? I see that the square root is taken for the $\theta$.
-        \item While the $\sigma^2_n$  is dependent on $n$, shouldn't it also be dependent on $R$? Because if $R = 1$, then $\sigma^2_n = 0$. That is the reason the CLT's for the ridge functions always reach $0$ when $n = N$, which is kind of misleading. Also doesn't the CLT somehow limit what our $n$ could be as our $R$ must be at least $2^5$ (using the 30 sample points rule)? But even if we restrict the $n$ to $2^5$ for $N = 2^{10}$, the CLT is still way better than EB and Betting. 
+        \art{Thanks for catching that.  I have updated the document and recomputed the example.}
+        \item While the $\sigma^2_n$  is dependent on $n$, shouldn't it also be dependent on $R$? Because if $R = 1$, then $\sigma^2_n = 0$. That is the reason the CLT's for the ridge functions always reach $0$ when $n = N$, which is kind of misleading. Also doesn't the CLT somehow limit what our $n$ could be as our $R$ must be at least $2^5$ (using the 30 sample points rule)? But even if we restrict the $n$ to $2^5$ for $N = 2^{10}$, the CLT is still way better than EB and Betting. \art{If $R=1$ then a sample variance is going to be $0/0$, or NaN (not a number) because we divide by $R-1$. We cannot have a sample variance unless $R\ge2$. The oracle is not using the sample variance but is instead using the known actual variance (defined using expectations). I think that we need a latex description of the quantities being computed as variances just to make sure we know exactly what they mean.}
         \item Similar to the inequality that exists for EB (Bennett’s inequality), is there something similar for Betting or are we assuming that this inequality can be applied to Betting as well? Because the simulations and even the paper prove how Betting is tighter than EB. 
+        \art{To do that we would need a formula that will give us width for known finite $n$ and $N$. There are some formulas in the papers we have seen, but it's not clear to me that we will be able to evaluate them for a specific integrand.  It looks like they're written in terms of the data being generated by the betting process.  Maybe we could work out their expectation.}
         \item The data for the oscillatory example is quite different from what we've gotten till now. We haven't seen such high optimum $n$ values, even for smaller $N$ values than the simulations were run at. Is the optimum $n$ somehow not linked very strongly to the roughness or smoothness of a function, but more on how periodic it is? 
+        \art{There are two things going on. First, the formula uses an asymptotic in $n$ variance.  That might not be very accurate for small $n$ and the oscillatory integrand. So it's different from the other examples where we know $\sigma_n$ exactly for finite $n$. The second thing is that inside the $O(N^\text{some power})$ is a constant multiplying the power of $N$. That constant could be pretty large for the oscillatory integrand.  Indeed it looked that  way.  However as $N$ grows the best $n$ still only increases slowly or eventually slowly. It starts off pretty high but then grows slowly.  Those examples also needed a sqrt in the variance formula so they looked more extreme than they really were.  It might be possible to cook up a function $f$ that is highly oscillatory and for which we know the actual $\sigma_n$ for finite $n$. But of course it would have to be an interesting function. }
     \end{itemize}
 \end{itemize}
 

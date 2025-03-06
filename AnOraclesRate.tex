@@ -60,6 +60,7 @@ So the width of the two sided interval is
 where $\sigma^2_n$ is the RQMC variance using $n$ sample  points.
 
 \aadit{Considering that EB is for IID, is it valid to replace $\sigma^2$ with $\sigma^2_n$? Since it is for IID, could the variance be for the $R$ samples instead? Then, variance could be affected by both $n$ (since $n$ is responsible in getting a value for each $R$) and $R$? - Aadit}
+\art{Yes, because we are using $R$ IID samples of $n$ RQMC point sets.  Each RQMC point set gives us one estimate of $\mu$. We do need to do IID re-randomizations of the RQMC points.  If we took $R$ consecutive batches of $n$ points out of one set of $nR$ RQMC points it would not be IID.}
 
 Suppose that $\sigma_n = An^{-\theta}$.  For smooth integrands
 and $d=1$, we have $\theta=3/2$ and for smooth integrands with $d>1$, we do better than $3/2-\epsilon$ asymptotically for any $\epsilon>0$, so we use $\theta=3/2$ as an example for RQMC doing very well. If RQMC is only as good as MC, then we would have $\theta=1/2$. Some scrambled digital nets and scrambled Halton methods have variance $o(1/n)$ whenever the MC variance is finite. Therefore $\theta=1/2$ is more pessimistic than realistic and we can use it as a lower bound. For integrands of bounded
@@ -71,7 +72,7 @@ Then the width  of the oracle's window is
 \frac{2An^{-\theta}}{\sqrt{N/n}}\sqrt{2\log(1/\delta)}  + \frac{2\log(1/\delta)}{3N/n}
 =\frac{2A}{\sqrt{N}}n^{1/2-\theta}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}.
 \end{align}
-We see immediately that when $\theta = 1/2$, the best $n$ is $n=1$. In other words, if all we are getting is the Monte Carlo rate of convergence then we should expect no improvement from switching to RQMC.  This holds even if RQMC attains the same variance rate as MC but with a favorable constant.  Interestingly, taking $n=1$ in that case would be the same as using plain MC and so there would be no benefit to the oracle's confidence window width from having that variance reduction.  This also means that standard Monte Carlo variance reduction techniques would not be helpful.  We only benefit from a better convergence rate.
+We see immediately that when $\theta = 1/2$, the best $n$ is $n=1$. In other words, if all we are getting is the Monte Carlo rate of convergence then we should expect no improvement from switching to RQMC.  This holds even if RQMC attains the same variance rate as MC but with a favorable constant.  Interestingly, taking $n=1$ in that case would be the same as using plain MC and so there would be no benefit to the oracle's confidence window width from having that variance reduction.  This also means that standard Monte Carlo variance reduction techniques would not be helpful.  We only benefit from a better convergence rate, not a better constant.
 
 For $\theta>1/2$, the oracle's interval width in~\eqref{eq:oraclewidth} is a convex function of $n$ with a unique minimum over $n\in(0,\infty)$ at some value $\tilde n$ which is not necessarily an integer.  
 If $\tilde n<1$, then $n=1$ is best.  If $\tilde n$ is a positive
@@ -158,8 +159,11 @@ we get a more favorable width ratio of $\Theta(N^{-1/4})$.
 The MC widths decay proportionally to $N^{1/2}$, so the
 RQMC widths decay proportionally to $N^{3/4}$.
 
-\section{Smooth one dimensional examples}
+\section{One dimensional examples}
 
+Here we consider some one dimensional functions where we know exactly what the RQMC variance is for given $n$.  For these we can compute the best $n$ for an empirical Bernstein interval.  For other one dimensional functions we can compute the asymptotic variance of an RQMC estimate. For a smooth integrand with $\theta=3/2$, the best $n$ grows proportionally to $N^{1/4}$ while for a nonsmooth integrand of bounded variation the best $n$ grows proportionally to $N^{1/3}$.  These are not very different.  For example $N^{1/3}/N^{1/4}=N^{1/12}$, and  so unless the implied constants in the rates differ enormously between two cases we will see similar $n$.
+
+\subsection{Smooth $f$}
 For $Y=f(x)=x$ and $x\sim \runif[0,1]$, we can work out how the oracle's
 choice would behave.  We find that the optimal $n$ does indeed grow
 very slowly with $N$ and that the resulting window lengths
@@ -180,9 +184,9 @@ so $A=1/12$ and $\theta=3/2$.
 %between $n$ and the nearest power of $2$.
 The MC variance is $1/(12n)$.
 
-The oracle will get an interval of width
+\art{Because $2\sqrt{12}=1\sqrt{3}$,} the oracle will get an interval of width
 \begin{align*}
-w_{\rqmc}&=\frac{1/6}{\sqrt{N}}n^{-1}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}.
+w_{\rqmc}&=\art{\frac{1}{\sqrt{3N}}}n^{-1}\sqrt{2\log(1/\delta)}  + \frac{2n\log(1/\delta)}{3N}.
 \end{align*}
 For $N = 2^m$ and $m=0,1,\dots,30$, we can work out the
 interval width for any value of $n$ that is a power of $2$
@@ -198,19 +202,21 @@ as expected.
 \toprule
 $\log_2(N)$&         $N$ & $n$    &    $w$ &$N^{3/4}w$\\
 \midrule 
- 0&         1  &1& 2.41e+00 & 2.405113\\
- 7&       128  &2& 4.92e$-$02 & 1.873616\\
-11&      2048  &4& 6.15e$-$03 & 1.873616\\
-15&     32768  &8& 7.69e$-$04 & 1.873616\\
-19&    524288 &16& 9.62e$-$05 & 1.873616\\
-23&   8388608 &32& 1.20e$-$05 & 1.873616\\
-27& 134217728 &64& 1.50e$-$06 & 1.873616\\
+ 0&         1 &  1 &3.4e$+$00  &3.410362\\
+ 3&         8 &  2& 7.5e$-$01  &3.563392\\
+ 7&       128 &  4& 9.4e$-$02  &3.563392\\
+11&      2048 &  8& 1.2e$-$02  &3.563392\\
+15&     32768 & 16& 1.5e$-$03  &3.563392\\
+19&    524288 & 32& 1.8e$-$04  &3.563392\\
+23&   8388608 & 64& 2.3e$-$05  &3.563392\\
+27& 134217728 &128& 2.9e$-$06  &3.563392\\
 \bottomrule
 \end{tabular}
 \caption{\label{tab:forx} For $f(x)=x$, this table shows optimal
 $n$ for each of several $N$, along with the empirical Bernstein
 width $w$ and $N^{3/4}w$. We only include value of $N$ for which
 $n$ has increased. It uses $\delta = 0.05$.
+\art{The numbers above are corrected from an earlier version. The values of $n$ grow slowly but perhaps faster than the empirical best $n$ do.}
 }
 \end{table}
 
@@ -230,19 +236,10 @@ $$
 so we take $A = \int_0^1f'(x)^2\rd x/12$ along with $\theta=3/2$.
 For $f(x) = x\exp(x-1)$, we get $f'(x) = (x+1)\exp(x-1)$, so
 $$
-A =\frac1{12}\int_0^1 (x+1)^2\exp(2x-2)\rd x=\frac1{48}\Bigl(5-\frac{1}{e^2}\Bigr)
+\art{A^2} =\frac1{12}\int_0^1 (x+1)^2\exp(2x-2)\rd x=\frac1{48}\Bigl(5-\frac{1}{e^2}\Bigr)
 $$
 (from WolframAlpha). With this value of $A$, we get the same values of $n$ for $N=2^m$ and $0\le m\le 30$ as we did for $f(x)=x$.
-\begin{verbatim}
-      m         N  n            w N^(3/4) w
-[1,]  0         1  1 2.493299e+00  2.493299
-[2,]  7       128  2 5.313224e-02  2.021928
-[3,] 11      2048  4 6.641530e-03  2.021928
-[4,] 15     32768  8 8.301913e-04  2.021928
-[5,] 19    524288 16 1.037739e-04  2.021928
-[6,] 23   8388608 32 1.297174e-05  2.021928
-[7,] 27 134217728 64 1.621467e-06  2.021928
-\end{verbatim}
+
 
 If $f$ is highly oscillatory then we find that larger $n$
 give better oracle widths than before.  Consider
@@ -258,23 +255,72 @@ $$
 $A=\pi^2\omega^2/24$.
 If $\omega =5$, then $f$ goes through $5$ complete sinusoidal periods
 in $[0,1]$. We get $A=25\pi^2/24\doteq10.3$ and (some R output is)
-\begin{verbatim}
-       m         N    n            w N^(3/4) w
- [1,]  0         1    1 5.232693e+01  52.32693
- [2,]  1         2    2 1.979142e+01  33.28507
- [3,]  2         4    4 8.288377e+00  23.44307
- [4,]  3         8    8 4.221438e+00  20.08066
- [5,]  5        32   16 1.554648e+00  20.91677
- [6,]  9       512   32 1.943310e-01  20.91677
- [7,] 13      8192   64 2.429138e-02  20.91677
- [8,] 17    131072  128 3.036422e-03  20.91677
- [9,] 21   2097152  256 3.795528e-04  20.91677
-[10,] 25  33554432  512 4.744410e-05  20.91677
-[11,] 29 536870912 1024 5.930512e-06  20.91677
-\end{verbatim} 
+
 For this highly oscillatory case we see $n=N$ for small $N$ and
 then eventual slow growth in $n$ with $N$.
 
+\subsection{Nonsmooth $f$}
+
+We can work out the RQMC variance for the function $f(x)=1\{x\le 1/3\}$ for scrambled Sobol' points
+when $n$ is a power of $2$. The binary expansion of $1/3$
+is $0.01010101\cdots$.  When $n$ is a power of $2$ we will find that $f$ is constant within $n-1$ of the intervals $[(i-1)/n,i/n)$ and so $n-1$ of the function values will have variance zero (after ordering them). The value in the remaining interval will be $1$ with probability $p_n$ and $0$ otherwise.  The value of $p_n$ is either $1/3$ or $2/3$. Either way, the RQMC variance will be $(1/3)(2/3)/n^2$ so $\sigma=An^{-\theta}$ for $\theta=1$ and $A=\sqrt{2}/3$.  Table~\ref{tab:forxunderonethird} shows results for this integrand comparable
+to those in Table~\ref{tab:forx} for $f(x)=x$.
+
+We can also find (via Wikipedia) that for $Y=f(x)$
+and $x\sim\runif[0,1]$
+$$
+\frac{\e((Y-\mu)^4)}{\e((Y-\mu)^2)^2} = \frac32.
+$$
+
+\begin{table}[t]
+\centering
+\begin{tabular}{rrrrr}
+\toprule
+$\log_2(N)$&         $N$ & $n$    &    $w$ &$N^{1/6}w$\\
+\midrule 
+  0&         1&   1& 4.3e$+$00 &4.304913\\
+  4&        16&   2& 6.6e$-$01 &4.175513\\
+  7&       128&   4& 1.6e$-$01 &4.175513\\
+ 10&      1024&   8& 4.1e$-$02 &4.175513\\
+ 13&      8192&  16& 1.0e$-$02 &4.175513\\
+ 16&     65536&  32& 2.6e$-$03 &4.175513\\
+ 19&   524288 & 64& 6.4e$-$04 &4.175513\\
+ 22&  4194304& 128& 1.6e$-$04 &4.175513\\
+ 25& 33554432& 256& 4.0e$-$05 &4.175513\\
+ 28& 268435456& 512& 1.0e$-$05 &4.175513\\
+\bottomrule
+\end{tabular}
+\caption{\label{tab:forxunderonethird} For $f(x)=1\{x\le 1/3\}$, this table shows optimal
+$n$ for each of several $N$, along with the empirical Bernstein
+width $w$ and $N^{1/6}w$. We only include value of $N$ for which
+$n$ has increased. It uses $\delta = 0.05$.
+}
+\end{table}
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{rrrr}
+    \toprule
+    $n$& $N_{\text{x}}$ & $N_{x<1/3}$ & $N_x/N_{x<1/3}$\\
+\midrule
+2&8& 16 & 2\\
+4&128& 128 & 1\\
+8&2048& 1024 & 2\\
+16 &32768& 8192 & 4\\
+32 &524288& 65536 & 8\\
+64 &8388608& 524288 &16\\
+\bottomrule
+    \end{tabular}
+    \caption{
+This table records the smallest power of $2$
+at which $n$ first becomes the optimal RQMC
+sample size.  The column $N_x$ is for $f(x)=x$
+with RQMC variance $1/(12n^3)$. The column $N_{x<1/3}$ is
+for $f(x) = 1\{x<1/3\}$ with RQMC variance $2/(9n^2)$.
+    Caption}
+    \label{tab:my_label}
+\end{table}
 
 \bibliographystyle{plain}
 \bibliography{FJH25}
