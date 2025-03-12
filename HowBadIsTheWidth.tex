@@ -5,7 +5,6 @@
 \usepackage{esdiff}
 
 \input{FJHDef.tex}
-
 \usepackage[authoryear]{natbib} % Enables author-year citations
 
 
@@ -21,6 +20,8 @@
 
 \newcommand{\art}[1]{{\color{blue}#1}}
 
+\newcommand{\tkappa}{\widetilde{\kappa}}
+\newcommand{\tkmax}{\tkappa_{\max}}
 
 \begin{document}
 \title{Constructing a Worst Case for Confidence Intervals of Bounded Random Variables}
@@ -115,8 +116,42 @@ f'(x) = N \exp(Nx) - N(1-x)^{N-1}
 
 In \cite{HicEtal14a} it was assumed that one would set the confidence interval the inflation factor for the variance, and the number of samples to bound the variance.  Then the maximum kurtosis was implied.  We will change so that the maximum kurtosis is set, and this determines the number of samples required to bound the variance.
 
+Let $1-\alpha$ be our confidence level for the whole algorithm, and let $(1 - \talpha)^2 \le 1 - \alpha$, i.e., $\talpha = 1 - \sqrt{1-\alpha}$ or even $\talpha = \alpha/2$.   \citet[(12)]{HicEtal14a} implies that 
+\begin{subequations} \label{sampvarbd}
+	\begin{gather}\label{sampvarup}
+		\Prob\left[s^2_n < \sigma^2 \left\{1 + \sqrt{\frac{\tilde\kappa}{\talpha n}}\right\} \right] \ge 1 - \talpha, \\
+		\label{sampvarlo}
+		\Prob\left[s^2_n > \sigma^2 \left\{1 - \sqrt{\frac{\tilde\kappa}{\talpha n}}\right\} \right] \ge 1 - \talpha.
+	\end{gather}
+\end{subequations}
+(I have simplified the expression, while still maintaining its validity.)  If $\fC^2$ is our chosen inflation factor for the variance, then 
+\begin{equation}
+\label{sampvarlo_b}
+\Prob[\fC^2 s^2_n > \sigma^2] \ge 1 - \talpha \quad \text{for}  \quad \fC^2 \ge \frac{1}{1 - \sqrt{\frac{\tilde\kappa }{\talpha n}}} 
+\end{equation}
+Suppose that we fix $\fC$ for some value greater than one, and we assume that $\tkappa$ is no greater than some bound, $\tkmax$.  Then we have $\Prob[\fC^2 s^2_{n_\sigma}> \sigma^2] \ge 1 - \talpha $ for  
+\begin{equation}
+	n_\sigma := \left \lceil \frac{\tkmax\fC^4}{\talpha(\fC^2-1)^2} \right \rceil.
+\end{equation}
+E.g. if $\fC = 2$ and $\talpha = 0.005$, then $n_\sigma = 356 \tkmax$.
 
+For the Chebychev inequality \citet[(14)]{HicEtal14a} tells us that we then need an additional 
+\[
+N_{\text{Cheb}}(\varepsilon,s_{n_\sigma},\talpha)
+= 
+\left\lceil\frac{\fC^2s_{n_\sigma}^2}{\talpha\varepsilon^2}\right\rceil
+\]
+Putting these together gets us a total cost of 
+\[
+\left \lceil \frac{\tkmax\fC^4}{\talpha(\fC^2-1)^2} \right \rceil + \left\lceil\frac{\fC^2s_{n_\sigma}^2}{\talpha\varepsilon^2}\right\rceil.
+\]
+You pay an $\Order(\tkmax)$ cost up front for a large kurtosis, but then the remainder of the cost is $\Order(\sigma^2/\varepsilon^2)$ to get the CI width to be $\varepsilon$.
 
+Other work to be done, which should be easy:
+\begin{itemize}
+	\item The cost is random because $s_{n_\sigma}$ is random.  Determine the upper bound on the cost with high probability.  
+	\item Extend this the Berry-Esseen bounds rather than Chebychev.
+\end{itemize}
 
 \bibliographystyle{plainnat}
 \bibliography{FJH25,FJHown25}
