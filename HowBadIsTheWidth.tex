@@ -6,6 +6,8 @@
 
 \input{FJHDef.tex}
 
+\usepackage[authoryear]{natbib} % Enables author-year citations
+
 
 \usepackage{algpseudocode}
 \usepackage{algorithm, algorithmicx}
@@ -111,10 +113,12 @@ f'(x) = N \exp(Nx) - N(1-x)^{N-1}
 
 \cite{HicEtal14a} derived a finite sample confidence interval assuming a bound on the kurtosis.  We are going to take advantage of that work.
 
+In \cite{HicEtal14a} it was assumed that one would set the confidence interval the inflation factor for the variance, and the number of samples to bound the variance.  Then the maximum kurtosis was implied.  We will change so that the maximum kurtosis is set, and this determines the number of samples required to bound the variance.
 
 
 
-\bibliographystyle{amsalpha}
+
+\bibliographystyle{plainnat}
 \bibliography{FJH25,FJHown25}
 
 \end{document}
