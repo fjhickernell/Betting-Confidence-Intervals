@@ -73,7 +73,10 @@ Can we show that for some choice of $p$
 \]
 for some $c$, meaning that the $1-\alpha$ confidence interval will always be $\Order(\log(1/\alpha)/n)$ for bounded random variables?
 
-\art{There are lots of inequalities for a binomial random variable if we take $Y_i\in\{0,1\}$ instead. Doing that won't change the kurtosis. Shorack and Wellner's empirical processes book has some inequalities on page 440. However, few of those are about lower bounds on tail probabilities. They mostly do upper bounds. They like to handle one tail at a time.  Maybe we can find a bigger collection of inequalities for the binomial.  I'm a bit puzzled by the $m$ in the denominator where I was expecting $\sqrt{m}$. BTW, if you're ever looking for inequalities about the Poisson distribution, that book has some very nice ones. }
+\art{No confidence interval based on an IID sample can be asymptotically smaller than the one you get from the CLT.  That might be in some of the Ramdas work. Last time I saw it, it was in \cite{aust:mack:2022-tr}. Lester Mackey is this year's COPSS award winner (big prize for statistician aged no more than 40.}
+
+
+%\art{There are lots of inequalities for a binomial random variable if we take $Y_i\in\{0,1\}$ instead. Doing that won't change the kurtosis. Shorack and Wellner's empirical processes book has some inequalities on page 440. However, few of those are about lower bounds on tail probabilities. They mostly do upper bounds. They like to handle one tail at a time.  Maybe we can find a bigger collection of inequalities for the binomial.  I'm a bit puzzled by the $m$ in the denominator where I was expecting $\sqrt{m}$. BTW, if you're ever looking for inequalities about the Poisson distribution, that book has some very nice ones. }
 
 This is equivalent to
 \[
@@ -153,7 +156,9 @@ Other work to be done, which should be easy:
 	\item Extend this the Berry-Esseen bounds rather than Chebychev.
 \end{itemize}
 
+%\section{Fred worried about independence}
+
 \bibliographystyle{plainnat}
-\bibliography{FJH25,FJHown25}
+\bibliography{FJH25,FJHown25,ebci4rqmc}
 
 \end{document}

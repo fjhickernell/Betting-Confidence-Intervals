@@ -288,6 +288,150 @@ Note that
 \end{equation}
 \aadit{Not sure where to go from here?}
 
+
+
+\section*{Starting with eqn (20) of \cite{WauRam24a}}
+
+The conditional expected width using IID values is
+\begin{align}\label{eq:their20}
+\e(W\mid Y_1^{R-1} )=\frac{\log(2/\alpha)+\sigma_n^2\sum_{i=1}^R\lambda_i^2/2}{\sum_{i=1}^R\lambda_i}
+\end{align}
+using $R$ replicates with variance $\sigma_n^2$.
+Their Table 1 gives expressions for sums of $\lambda_i$
+and $\lambda_i^2$
+
+Using line 4, $\lambda_i\asymp 1/\sqrt{i\log(i)}$ we get
+$$W=
+\frac{\log(2/\alpha)+\frac{\sigma_n^2}2\log\log(R)}{\sqrt{R/\log(R)}}
+$$
+
+\art{[Eqn (20) dimensions: If $Y$ is measured in meters, then $\lambda_i$ are in inverse meters and the numerator on the right is dimensionless.  It goes through: LHS and RHS are both in meters.  Their half-width formula in the first display of section 3.3 is missing a $\sigma^2$.}
+
+Let $R=N/n$.  Then
+$$
+\frac{\log(2/\alpha)+\frac{\sigma_n^2}2\log\log(N/n)}{\sqrt{(N/n)/\log(N/n)}}.
+$$
+Looks nasty.  Let's try $\sigma^2_n = \sigma^2_0n^{-\theta}$ with $n=N/R$.
+\art{[Different power for $n$ than before.]}
+$$W=
+\frac{\log(2/\alpha)+\frac{\sigma_0^2}2N^\theta R^{-\theta}\log\log(R)}{R/\log(R)}
+$$
+
+The numerator of $\frac\partial{\partial R}W$ is
+\begin{align*}
+&\frac{\sigma_0^2}2N^\theta \Bigl((-\theta)R^{-\theta-1}\log\log(R)
++R^{-\theta}\frac1{R\log(R)}
+\Bigr)
+\Bigl(\frac{R}{\log(R)}\Bigr)\\
+&-\Bigl(\log(2/\alpha)+\frac{\sigma_0^2}2N^\theta R^{-\theta}\log\log(R)\Bigr)
+\frac12\Bigl(\frac{R}{\log(R)}\Bigr)^{-1/2}\frac{\log(R)-1}{\log(R)^2}
+\end{align*}
+This doesn't look promising either.
+
+Row 3 of Table 1 attains slightly worse width, 
+proportional to $\log(t)/\sqrt{t}$ instead
+of $\sqrt{\log(t)}/\sqrt{t}$.
+
+Using line 3, with $\lambda_i\asymp 1/\sqrt{i}$ we get
+$$W=
+\frac{\log(2/\alpha)+\frac{\sigma_n^2}2\log(R)}{\sqrt{R}}
+$$
+Lets try again with $R=N/n$. Then
+\begin{align*}W&=
+\frac{\log(2/\alpha)+\frac{\sigma_0^2}2n^{-\theta}\log(N/n)}{\sqrt{N/n}}
+\end{align*}
+The numerator of the derivative wrt n is
+\begin{align*}
+&\frac{\sigma^2_0}2\Bigl((-\theta n^{-\theta-1})\log(N/n)
++n^{-\theta}(-1/n)\Bigr)\\
+&-\Bigl(\log(2/\alpha)+\frac{\sigma_0^2}2n^{-\theta}\log(N/n)\Bigr)\Bigl(N^{1/2}(-1/2)n^{-3/2}\Bigr)\\
+&=\frac{\sigma^2_0}{2n^{\theta+1}}\Bigl(-\theta\log(N/n)
++1\Bigr)\\
+&+\Bigl(\log(2/\alpha)+\frac{\sigma_0^2}2n^{-\theta}\log(N/n)\Bigr)\Bigl(N^{1/2}(1/2)n^{-3/2}\Bigr)
+\end{align*}
+
+I'm not liking this one either.
+We can compute the width for any $n$, $R$ and $\theta$.
+That's better than computing the Pontil and Maurer width.
+
+
+\section*{Starting with eqn (21) of \cite{WauRam24a}}
+
+Here
+$$
+W = \frac{\log(2/\alpha)+\sigma^2t_\star\lambda_\star^2}{t_\star\lambda_\star}
+$$
+Now $t_\star$ is our $R$ and then
+$$
+\lambda_\star = \sqrt{\frac{2\log(2/\alpha)}{\sigma_n^2 R}}
+$$
+So
+\begin{align*}
+W &= \frac{\log(2/\alpha)+\sigma_n^2R
+\bigl(2\log(2/\alpha)\sigma_n^{-2}R^{-1}\bigr)
+}{R\lambda_\star}\\
+&=4\log(2/\alpha)/(R\lambda_*)
+\end{align*}
+That's odd.  Now we have to minimize the denominator
+$$
+R\lambda_\star =  
+\sqrt{\frac{2R\log(2/\alpha)}{\sigma_n^2}}
+$$
+which doesn't give a sensible answer.  
+\art{The reason is that they've already taken a limit in 
+order to get that expression. We need to work with a
+pre-limit quantity.
+}
+\section*{Starting with their formula that has a typo}
+
+Now let
+$$
+W(n,R) = \frac{\log(2/\alpha)+\sigma_n^2A_R}{B_R}
+$$
+where $A_R=\sum\lambda_i^2$ and $B_R=\sum\lambda_i$.
+They left out the $\sigma^2$ from the numerator.
+Let's put $V_n = \sigma^2_n$ to get
+$$
+\frac{\log(2/\alpha)+V_nA_R}{B_R}
+$$
+Now suppose that we get to choose between using
+$\tilde n=2n$ and using $\tilde R=2R$.
+\begin{align*}
+W_{2n,R} & = \frac{\log(2/\alpha)+V_{2n}A_R}{B_R}\\
+W_{n,2R} & = \frac{\log(2/\alpha)+V_{n}A_{2R}}{B_{2R}}
+\end{align*}
+Then
+\begin{align*}
+\frac{W_{2n,R}}{W_{n,2R}} 
+& = \frac{\frac{\log(2/\alpha)+V_{2n}A_R}{B_R}}
+{\frac{\log(2/\alpha)+V_{n}A_{2R}}{B_{2R}}}\\
+& = \frac{(\log(2/\alpha)+V_{2n}A_R)B_{2R}}
+{(\log(2/\alpha)+V_{n}A_{2R})B_R}
+\end{align*}
+If using $2n$ is better then
+$$
+(\log(2/\alpha)+V_{2n}A_R)B_{2R}<
+(\log(2/\alpha)+V_{n}A_{2R})B_R
+$$
+\art{Not knowing quite where this goes, I'll keep
+changing the inequality looking for a handle.}
+$$
+\log(2/\alpha)(B_{2R}-B_R)
+< V_nA_{2R}B_R - V_{2n}A_RB_{2R}
+$$
+
+\begin{align*}
+\log(2/\alpha)
+&< \frac{V_nA_{2R}B_R - V_{2n}A_RB_{2R}}{B_{2R}-B_R}\\
+&= \frac{V_nA_{2R} - V_{2n}A_RB_{2R}/B_R}{B_{2R}/B_R-1}\\
+\frac{\log(2/\alpha)}{\sigma^2_0}n^\theta
+&<\frac{A_{2R} - 2^{-\theta}A_RB_{2R}/B_R}{B_{2R}/B_R-1}
+\end{align*}
+
+
+
+
+
 \bibliographystyle{plain}
-\bibliography{FJH25}
+\bibliography{FJH25,FJHown25}
 \end{document}
