@@ -265,7 +265,7 @@ $$\mu = \int_{[0,1]^d}f(\bsx)\rd\bsx
 \art{[I like the idea of writing an expectation here. I'm preferring not to distinguish
 random $\boldsymbol{X}$ from an observed
 value $\bsx$ here. It could be a nuisance to carry
-that through.]}
+that through.] } \fred{Agreed.}
 %\fred{= \mathbb{E}[f(\boldsymbol{X})], \quad \text{where } \boldsymbol{X} \sim \dunif[0,1]^d}.$$
 In MC sampling we take $\bsx_i\simiid \dunif[0,1]^d$ and
 estimate $\mu$ by
@@ -290,8 +290,8 @@ asymptotic $1-\alpha$ confidence interval for~$\mu$.
 QMC sampling replaces random points $\bsx_i$ by 
 deterministic points that more evenly sample the
 unit cube.  There are many ways to quantify that 
-property but the most widely used one is the
-star discrepancy
+property but the most widely used one \fred{[I would say that this is the most historically popular one, but I am not sure if it is still the most widely used.  To overcome the curse of dimensionality,  to make it feasible to compute for large sample sizes, and to make it symmetric with respect to the center of the cube, I would say that others are more widely used.] } is the
+star discrepancy:
 $$
 D_n^* = D_n^*(\bsx_1,\dots,\bsx_n)=\sup_{\bsa\in[0,1]^d}
 \Bigl| \frac1n\sum_{i=1}^n1\{\bsx_i\in[\bszero,\bsa)\}
