@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage[margin=1.3in]{geometry} % hack to have no pseudocode page break
+\usepackage{url}
+\title{Seeds for our simulations}
+\date{March 2025}
+\author{A.B.Owen}
+
+\newcommand{\real}{\mathbb{R}}
+
+\newcommand{\tab}{\hspace*{0.6cm}}
+\newcommand{\qmc}{\mathrm{qmc}}
+\newcommand{\mc}{\mathrm{mc}}
+\begin{document}
+\maketitle
+
+Chapter 3.2 of \url{https://artowen.su.domains/mc/}
+has about 4 pages on setting up random seeds and streams.
+We don't need the full complexity.
+
+It could work to just set the seed once at the beginning
+for all computations.  It is important to do at least that
+so that exactly the same computations can be obtained
+later. That helps with intermittent bugs and reproducibility.
+There might be an
+advantage in making the seed depend on some of the
+variables.  That can make some of the values more
+reproducible if we change the set of dimensions or sample
+sizes or the number of iterations.  It could also introduce
+hard to notice bugs.
+
+\medskip
+The ridge functions are the most complicated
+simulations. Here is pseudocode for the simulation that I hope is computationally
+feasible for them.  I think that there is more than one reasonable way
+to order the loops.  Here it is with just one seed for the whole simulation.
+Below I discuss multiple seeding.
+\medskip
+
+\par\noindent
+seed $\gets$ starting seed\\
+dset $\gets$ set of dimensions $d$\\
+gset $\gets$ set of ridge functions $g$\\
+Nset $\gets$ set of budget sizes $N$\\
+M $\gets$ number of repeated confidence interval constructions\\
+$D\gets$ max(dset)\\
+For $N\in\mathrm{N set}$\\
+\tab For $m=1,\dots,M$\\
+\tab\tab For $n\in\mathrm{n set(N)}$\\
+\tab\tab\tab $R=N/n$\\
+\tab\tab\tab For $r=1,\dots,R$\\
+\tab\tab\tab\tab Make QMC point set $\qmc(N,m,n,r)\in\real^{n\times D}$\\
+\tab\tab\tab\tab Make MC point set $\mc(N,m,n,r)\in\real^{n\times D}$\\
+\tab\tab\tab\tab For $d\in\mathrm{dset}$\\
+\tab\tab\tab\tab\tab $X(\qmc)\gets$ first $d$ columns of $\qmc(N,m,n,r)$\\
+\tab\tab\tab\tab\tab $X(\mc)\gets$ first $d$ columns of $\mc(N,m,n,r)$\\
+\tab\tab\tab\tab\tab For $g\in\mathrm{gset}$\\
+\tab\tab\tab\tab\tab\tab $Y(\qmc,N,m,n,r,d,g)\gets$ average $g$ on $X(\qmc)$\\
+\tab\tab\tab\tab\tab\tab $Y(\mc,N,m,n,r,d,g)\gets$ average $g$ on $X(\mc)$\\
+\tab\tab\tab Wbet$(\qmc,N,m,n)\gets$ betting qmc width\\
+\tab\tab\tab Wbet$(\mc,N,m,n)\gets$ betting mc width\\
+\tab\tab\tab WeB$(\qmc,N,m,n)\gets$ empirical Bernstein qmc width\\
+\tab\tab\tab WeB$(\mc,N,m,n)\gets$ empirical Bernstein mc width\\
+Write all the widths to a file
+
+\bigskip
+
+In principle we could reset the seed
+for every $N,m,n,r$ for the QMC points
+and also for the MC points.  Then there
+would be a seed setting call just before each place
+where point sets $X$ are made.
+That raises the issue of coming up with all
+the seeds you need.  You can start with an
+array whose dimensions correspond to all of the
+seed combinations that you will need.  Then
+write seeds into that array.  It could work to
+just write seeds 1 through K to that array
+where K is the number of entries.  Or you could
+make the seed be some function of the arguments
+to that array like $\log_2(N)+100*m+10000*n+100000*r$.
+That gets tricky because you might overflow one
+of the counts and find the same seed used twice.
+Another approach is to set up the array and
+then fill it with integers $1$ to $K$ in random
+order.  Or make a huge array of seeds and take
+a random sample of $K$ distinct ones and put 
+those into your array.
+
+In a first run, it would be smart to start all the
+loops at some small number of values (say 2 levels each)
+and to keep appending the widths to a file as soon 
+as they are computed. That way
+you can see what is going on. You can also time
+the runs and see how the run time grows, watching
+for any places where it is nonlinear. Also after ramping
+up you might later have to kill the simulation and
+it would be useful to have the intermediate results
+to study then.
+
+Regarding seeds, it would be nice to have a separate
+seeds for each N, m, n and for qmc vs mc.  I would
+rate that as a nice to have, not an essential.  It is
+not necessary to have separate seeds for each $r$, 
+though I don't see how it would hurt.  Trying to make
+the seed depend only on N, m, n, qmc/mc but not on r
+would involve some tricky seed saving and resetting
+and I think that would be too fussy and error prone.
+
+One advantage of complex seeding is that when you
+ramp up the computations from small ones to large
+ones some or even all of the computed widths
+will stay the same.  It is reassuring to see the
+same numbers come up. 
+
+I would start with just one seed being set while
+looking at ways to time the tiny versions of the
+simulation.  You might learn something about how
+to speed up the simulations that would require
+changing how you do the seeds.
+
+The most expensive runs will be for the largest
+values of $N$.  It might become necessary to have
+$M$ become $M(N)$ with fewer iterations for the
+very largest value of $N$. E.g, 20 for the biggest
+$N$ and 100 for all the others.  Because the intersesting
+values of $N$ are powers of 2 it is common for the
+biggest $N$ to be about half of the total computation.
+
+\end{document}

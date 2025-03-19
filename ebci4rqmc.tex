@@ -75,11 +75,12 @@ but it can be difficult to get confidence intervals for RQMC
 estimates.  In this paper we study empirical Bernstein confidence
 intervals for RQMC estimates.  We suppose that
 the RQMC variance is $\tilde O(N^{-\theta})$\fred{, i.e., neglecting powers of $\log (n)$,} where
-theory tells us that $1<\theta\le3$ \fred{[Do we include $1$, since for $L_2$ integrands that is what we have?]} 
-\art{[Good point. For $L_2$, we know that the variance is $o(1/n)$. That in itself
-does not mean that it is $\tilde O(n^{-\theta})$ for some $\theta>1$, so I think
-we need to include $\theta=1$. It might be possible to construct an adversarially
-chosen set of Fourier-Walsh coefficients to make the variance decay as $O(\log(n)/n)$ or worse.]}
+theory tells us that $1\art{\le}\theta\le3$ 
+%\fred{[Do we include $1$, since for $L_2$ integrands that is what we have?]} 
+%\art{[Good point. For $L_2$, we know that the variance is $o(1/n)$. That in itself
+%does not mean that it is $\tilde O(n^{-\theta})$ for some $\theta>1$, so I think
+%we need to include $\theta=1$. It might be possible to construct an adversarially
+%chosen set of Fourier-Walsh coefficients to make the variance decay as $O(\log(n)/n)$ or worse.]}
 is a reasonable
 range with more favorable integrands having larger
 $\theta$. When there are $N$ integrand evaluations
@@ -105,12 +106,15 @@ studied.}
 \section{Introduction}
 
 We study the combination of randomized quasi-Monte
-Carlo (RQMC) integration \fred{[We talk about integration, but then the confidence intervals are typically about random variables.  Should we specify early that we want CIs for $\mu = \mathbb{E}(Y)$, where $Y = f(\boldsymbol{X})$ and $\boldsymbol{X} \sim \mathbb{U}[0,1]^d$, so $\mu = \int_{[0,1]^d} f(\boldsymbol{x}) \, \mathrm{d} \boldsymbol{x}$, rather than wait to p.\ 4?]} 
-with some non-asymptotic\fred{---valid for finite samples---}confidence interval methods.
+Carlo (RQMC) integration \art{to estimate an expectation} \fred{[We talk about integration, but then the confidence intervals are typically about random variables.  Should we specify early that we want CIs for $\mu = \mathbb{E}(Y)$, where $Y = f(\boldsymbol{X})$ and $\boldsymbol{X} \sim \mathbb{U}[0,1]^d$, so $\mu = \int_{[0,1]^d} f(\boldsymbol{x}) \, \mathrm{d} \boldsymbol{x}$, rather than wait to p.\ 4?]} 
+with some non-asymptotic \art{(finite sample valid)} methods
+to get a confidence interval for such an expectation.
+\art{[I prefer to avoid getting into too much notation this early.]}
+%\fred{---valid for finite samples---}confidence interval methods 
 RQMC has significant accuracy  benefits over plain Monte Carlo (that
 we outline below), but so far most of the confidence intervals based on
 RQMC estimates have had justifications that were asymptotic
-in their sample size \fred{\cite{LEcEtal24a} or made assumptions about the integrand that might be impossible to verify in practice \cite{HicJim16a,JimHic16a}}.  Empirical Bernstein and some related betting
+in their sample size \fred{\cite{LEcEtal24a}. \art{Some other methods use} assumptions about the integrand that might be impossible to verify in practice \cite{HicJim16a,JimHic16a}}. \art{[Those are good to mention, but I prefer to use shorter sentences here.]} Empirical Bernstein and some related betting
 methods (described below) give finite sample assurances for bounded integrands.  Specifically, if it is known that the integrand values must lie
 between $0$ and $1$, then those methods can construct a confidence
 interval that has at least $1-\alpha$ probability to contain
@@ -122,8 +126,12 @@ be assumed to be the interval $[0,1]$.
 The context for our work is as follows.
 Many scientific problems require the numerical 
 evaluation of multidimensional
-integrals. When the dimension is high enough then classical \fred{tensor product cubature} rules 
-like those in \cite{DavRab84} become too expensive to use. It is then
+integrals. When the dimension is high enough then classical \fred{tensor product \art{integration}} rules 
+like those in \cite{DavRab84} become too expensive to use.
+\art{[There's a split between calling it cubature and calling
+it quadrature, but integration works for both camps.]}
+% for me, `cubature' gives a fingers on the chalkboard feeling
+It is then
 common to use plain Monte Carlo (MC) methods instead.  MC
 methods based on random sampling typically have root mean
 squared errors (RMSEs) of $O(n^{-1/2})$ given $n$
@@ -179,11 +187,11 @@ empirical Bernstein confidence intervals.  The extent of the
 narrowing depends on the RQMC convergence rate which
 varies from problem to problem. Perhaps surprisingly,
 the more effective RQMC is, the smaller the optimal value
-of $n$ becomes. We find $n=O(N^{1/(1+\theta)})$ \fred{Do we need $\tilde O$ here and below?} gives
+of $n$ becomes. \art{When the RQMC variance is $O(n^{-\theta})$, then} we find that $n=O(N^{1/(1+\theta)})$ \fred{Do we need $\tilde O$ here and below?} \art{[I think so, thanks. Or we can couch it differently as above.]} gives
 the narrowest intervals.  Those intervals are narrower
 than MC-based intervals by a factor of $O(N^{(1-\theta)/(2+2\theta)})$.
 The intervals themselves have widths that are
-$O(N^{-\theta/(1+\theta)})$\fred{, which makes them $\tilde O(N^{(\theta_1)/(1+\theta)})$ thicker than the root mean squared RQMC error}. Section~\ref{sec:finite} makes
+$O(N^{-\theta/(1+\theta)})$\fred{, which makes them $\art{O}(N^{(\theta_1)/(1+\theta)})$ thicker than the root mean squared RQMC error}. Section~\ref{sec:finite} makes
 some computational investigations.  As predicted by the theory
 the best values of $n$ to use grow slowly with $N$.
 Section~\ref{sec:discussion} has some final comments
@@ -252,7 +260,13 @@ by applying Ville's inequality \cite{vill:1939} to nonnegative supermartingales.
 
 The problem we consider is to approximate the finite-dimensional
 integral
-$$\mu = \int_{[0,1]^d}f(\bsx)\rd\bsx \fred{= \mathbb{E}[f(\boldsymbol{X})], \quad \text{where } \boldsymbol{X} \sim \dunif[0,1]^d}.$$
+$$\mu = \int_{[0,1]^d}f(\bsx)\rd\bsx 
+\art{=\e(f(\bsx)),\quad\text{for $\bsx\sim\dunif[0,1]^d$}}.$$
+\art{[I like the idea of writing an expectation here. I'm preferring not to distinguish
+random $\boldsymbol{X}$ from an observed
+value $\bsx$ here. It could be a nuisance to carry
+that through.]}
+%\fred{= \mathbb{E}[f(\boldsymbol{X})], \quad \text{where } \boldsymbol{X} \sim \dunif[0,1]^d}.$$
 In MC sampling we take $\bsx_i\simiid \dunif[0,1]^d$ and
 estimate $\mu$ by
 $$
