@@ -86,7 +86,7 @@ range with more favorable integrands having larger
 $\theta$. When there are $N$ integrand evaluations
 partitioned into $R$ independent replicates each using $n=N/R$
 RQMC points each, we show that the optimal point set size $n$ grows
-as $N^{1/(1+\theta)}$. The resulting intervals have
+as $N^{1/(1+\theta)}$ \fred{[May I make the cosmetic suggestion to write $\theta +1$ instead of $1 + \theta$?  This is because $\theta - 1$ appears below and in Theorem 1, for example, which is always nonnegative, and l$\theta - 1$ ooks  nicer than $-1+\theta$.] }. The resulting intervals have
 a width that is $\tilde O(N^{-\theta/(1+\theta)})$. 
 This is  much narrower
 than we would get under plain Monte Carlo (MC) sampling
@@ -840,7 +840,7 @@ O(R^{-1}n^{-\theta}) = O( N^{-1}n^{1-\theta})
 %= O( N^{-1+(1-\theta)/(1+\theta)})
 = O( N^{-2\theta/(1+\theta)}).
 $$
-By requiring a guaranteed confidence level, we
+By requiring a guaranteed confidence level\fred{, rather than an asymptotic one}, we
 get a higher variance than $N^{-\theta}$
 that we could have had with $R=O(1)$.
 For $\theta=2$ the variance rises
@@ -1317,7 +1317,7 @@ It also remains to find a way to
 use RQMC in confidence sequences.  In numerical
 integration problems, if $n$ is not small enough
 to get a good answer then $n+1$ will also be
-too small to get a good answer. It is more reasonable
+too small to get a good answer. \fred{[I am missig something in the previous sentence.  It does not make sense to me yet.]}  It is more reasonable
 to consider a range of values $n$ that grow geometrically
 not arithmetically \cite{sobo:1998}. \art{I think this is the one where Sobol said that.}  A confidence sequence for geometrically
 growing $n$ would not have to be as wide as one for arithmetically
