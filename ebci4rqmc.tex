@@ -5,7 +5,7 @@
 \usepackage{xcolor}
 \usepackage{paralist}
 \usepackage{xspace}
-\usepackage{ulem}
+\usepackage{ulem}  % this underlines titles in the references so we should comment it out before the final version
 
 \newtheorem{theorem}{Theorem}
 
@@ -74,7 +74,8 @@ variable using some equidistributed sample points in the unit cube
 but it can be difficult to get confidence intervals for RQMC
 estimates.  In this paper we study empirical Bernstein confidence
 intervals for RQMC estimates.  We suppose that
-the RQMC variance is $\tilde O(N^{-\theta})$\fred{, i.e., neglecting powers of $\log (n)$,} where
+the RQMC variance using $n$ sample points 
+is $\tilde O(n^{-\theta})$\fred{, i.e., neglecting powers of $\log (n)$,} where
 theory tells us that $1\art{\le}\theta\le3$ 
 %\fred{[Do we include $1$, since for $L_2$ integrands that is what we have?]} 
 %\art{[Good point. For $L_2$, we know that the variance is $o(1/n)$. That in itself
@@ -93,6 +94,10 @@ than we would get under plain Monte Carlo (MC) sampling
 but also a large multiple of \fred{$\tilde O(N^{(\theta - 1)/(1+\theta)})$ }the RQMC standard error $\tilde O(N^{-\theta/2})$ in those cases where $\theta$ is largest.
 \end{abstract}
 
+\art{TODO: work out where to use $\tilde O$ and where
+to use $O$. Any $O(\cdot)$ conclusions need to be 
+prefaced by an $O(\cdot)$ assumption.}
+
 \aadit{Are we going to talk about the Hedged Betting CI as I did simulations on those as well and they are likely the tightest non-asymptotic CIs?}
 \art{Yes, we can put those in as a numerical comparison, even if we don't have theory for them.  From memory, I think they come out slightly narrower
 than the intervals we study but maybe asymptotically equivalent.}
@@ -109,7 +114,7 @@ We study the combination of randomized quasi-Monte
 Carlo (RQMC) integration \art{to estimate an expectation} \fred{[We talk about integration, but then the confidence intervals are typically about random variables.  Should we specify early that we want CIs for $\mu = \mathbb{E}(Y)$, where $Y = f(\boldsymbol{X})$ and $\boldsymbol{X} \sim \mathbb{U}[0,1]^d$, so $\mu = \int_{[0,1]^d} f(\boldsymbol{x}) \, \mathrm{d} \boldsymbol{x}$, rather than wait to p.\ 4?]} 
 with some non-asymptotic \art{(finite sample valid)} methods
 to get a confidence interval for such an expectation.
-\art{[I prefer to avoid getting into too much notation this early.]}
+\art{[I've put in something about it involving expectations without introducing more notation at this point.]}
 %\fred{---valid for finite samples---}confidence interval methods 
 RQMC has significant accuracy  benefits over plain Monte Carlo (that
 we outline below), but so far most of the confidence intervals based on
@@ -161,7 +166,13 @@ with coverage levels that converge to their desired level,
 such as 95\%, as the amount of sampling increases.  The GAIL \fred{\cite{Gail_ug} and qmcpy \cite{QMCPy2020a} } libraries provides an exception, so long as one can
 provide some outside information on the integrand.  This could
 be an assumption about a kurtosis quantity or it could be
-an assumption about the way  in which Fourier\fred{\sout{-Walsh}[Fourier Walsh for nets and Fourier complex exponential for lattice]} coefficients
+\art{an assumption about the way that coefficients in
+a suitable orthogonal decomposition of the integrand decay.}
+\art{[Readers from a statistics background would not
+know about nets or lattice rules and their
+corresponding expansions and so I hesitate
+to use those words at this point.]}
+\fred{[Fourier Walsh for nets and Fourier complex exponential for lattice]} coefficients
 decay.  Our goal here is to study RQMC confidence intervals
 under the simple assumption that the integrand is bounded between
 zero and one.  The advantage of this assumption over others is 
@@ -187,7 +198,8 @@ empirical Bernstein confidence intervals.  The extent of the
 narrowing depends on the RQMC convergence rate which
 varies from problem to problem. Perhaps surprisingly,
 the more effective RQMC is, the smaller the optimal value
-of $n$ becomes. \art{When the RQMC variance is $O(n^{-\theta})$, then} we find that $n=O(N^{1/(1+\theta)})$ \fred{Do we need $\tilde O$ here and below?} \art{[I think so, thanks. Or we can couch it differently as above.]} gives
+of $n$ becomes. \art{When the RQMC variance is $O(n^{-\theta})$, then} we find that $n=O(N^{1/(1+\theta)})$ \fred{Do we need $\tilde O$ here and below?} \art{[I think so, thanks. Or we can couch it differently as above. Not yet
+sure what will be best.]} gives
 the narrowest intervals.  Those intervals are narrower
 than MC-based intervals by a factor of $O(N^{(1-\theta)/(2+2\theta)})$.
 The intervals themselves have widths that are
@@ -264,7 +276,7 @@ $$\mu = \int_{[0,1]^d}f(\bsx)\rd\bsx
 \art{=\e(f(\bsx)),\quad\text{for $\bsx\sim\dunif[0,1]^d$}}.$$
 \art{[I like the idea of writing an expectation here. I'm preferring not to distinguish
 random $\boldsymbol{X}$ from an observed
-value $\bsx$ here. It could be a nuisance to carry
+value $\bsx$. It could be a nuisance to carry
 that through.]}
 %\fred{= \mathbb{E}[f(\boldsymbol{X})], \quad \text{where } \boldsymbol{X} \sim \dunif[0,1]^d}.$$
 In MC sampling we take $\bsx_i\simiid \dunif[0,1]^d$ and
@@ -333,7 +345,7 @@ simultaneously satisfy two properties:
 \end{compactenum}
 
 From the second property, $|\hat\mu-\mu|=\tilde O(n^{-1})$.
-As a result the \fred{\sout{R}}MSE of RQMC is $\tilde O(n^{-2})$
+As a result the \fred{\sout{R}}MSE \art{[Good catch.]} of RQMC is $\tilde O(n^{-2})$
 in the BVHK case.
 To get an approximate confidence interval from RQMC
 we can form $R$ statistically independent RQMC estimates
@@ -476,8 +488,8 @@ a known value $\sigma^2=\var(Y)$ or even a sample estimate
 of that variance.  Those bounds can be used to get
 improved confidence intervals.
 
-\art{[Bennett's inequality in the form we use
-does not appear in Bennett \cite{benn:1962}.]
+%\art{[Bennett's inequality in the form we use
+%does not appear in Bennett \cite{benn:1962}.]
 Theorem 3 of Maurer and Pontil \cite{maurer2009empirical}
 is that
 $$
@@ -486,7 +498,13 @@ $$
   $$
 holds with probability at least $1-\delta$.
 They call this Bennett's inequality, because it derives
-from an inequality in \cite{benn:1962}.}
+from an inequality in \cite{benn:1962}. 
+\art{They do not supply a proof, but it can be proved from Bernstein's
+inequality given as Theorem 3 of \cite{bouc:lugo:bous:2003}.}
+\art{[For a while I was afraid we would have to call it a conjecture.
+They state it as a theorem and point to some things in
+Hoeffding \cite{hoef:1963}, but I could not connect the dots
+from anything in Hoeffding's paper to their Theorem 3.]}
 Taking $\delta =\alpha/2$ we get
 \begin{align}\label{eq:bennettci}
 \bar Y_m \pm \sqrt{\frac{2\sigma^2\log(2/\alpha)}m}
@@ -557,10 +575,9 @@ increases their capital. Choosing $\lambda_i<0$ is a
 way to bet that $Y_i<m$.
 
 Section 4 of \cite{WauRam24a} notes that $\ck_t(\mu)$ is
-a martingale, so that $\e(\ck_t(\mu))=1$ for all $t\ge1$.
+a \art{nonnegative} martingale, so that $\e(\ck_t(\mu))=1$ for all $t\ge1$.
 There is no way for the bettor to pick bet sizes $\lambda_i(\mu)$
-to make an expected profit.    From the martingale
-property
+to make an expected profit.   \art{Then from Ville's Theorem}
 $$
 \Pr( \ck_t(\mu)\le 1/\alpha,\ \forall t\ge1)\ge1-\alpha.
 $$
@@ -572,22 +589,26 @@ all the values $m$ for
 which $\max_{1\le\tau\le t}\ck_t(m)\le1/\alpha$.
 This idiom uses a hypothetically infinite ensemble of 
 bettors to do this, but \cite{WauRam24a} give
-algorithms for it, some of which we present below.
+implementable algorithms for it, some of which we present below.
 
 The other side of the coin is that there are good betting
-strategies when $m\ne\mu$.  The bettor's expected fortune
+strategies when $m\ne\mu$.  Under those, the bettor's expected fortune
 will grow steadily when $m\ne\mu$. That is what one needs
 to make a confidence sequence not just valid but also useful
 in having a width that converges to zero with increased sampling.
 
 In addition to the capital process described
-above, they have some other processes that
+above, \art{that they call the `hedged' process}
+they have some other processes that
 produce different martingales. One of them produces confidence
 sequences that are analogous to Hoeffding intervals
 and another produces sequences analogous to the
-empirical Bernstein intervals.  We focus on the analogues 
-of empirical Bernstein intervals because for large $t$
-they are narrower than the analogues of the Hoeffding intervals.
+empirical Bernstein intervals.  \art{We focus on the 
+hedged process confidence intervals and the
+predictable plug-in empirical Bernstein
+intervals, but not the predictable plug-in Hoeffding intervals. Those
+do not use a sample variance, and they are wider than the others for 
+larger $t$.}
 
 
 Those confidence intervals make use of running sample moments
@@ -692,9 +713,6 @@ models of the form
 \begin{align}\label{eq:themodel}
 \sigma^2_n = \sigma^2_0n^{-\theta}.
 \end{align}
-\art{[Now using $\theta$ for variance not standard deviation.
-The reason is that our reference values are more memorable
-for the variance.]}
 These provide insight even though the actual variance is not
 necessarily any power of $n$ and it is more convenient
 than using the idiom $O(n^{-\theta+\epsilon})$ here.
@@ -762,7 +780,7 @@ as their product.  We know that $0\le\sigma_0^2\le1/4$ must hold because
 the most variance we can have for a random variable bounded between
 $0$ and $1$ is $1/4$. So we know that $N\sigma_0^2\le N/4$. I use that
 below in some guidance on choosing $n$. For $N=1024$, we would
-always pick $n<7$. The best power of 2 might still be $8$.]}
+always pick $n<7$. The best power of 2 might still be $n=8$.]}
 
 \aadit{For the optimum $n_*$, shouldn't it be $(3(\theta - 1))^2$ instead of it being under the square root?}
 \art{Thanks, I've changed it, but have not yet propagated that to the
@@ -1046,7 +1064,10 @@ For $d=1$, the BVHK case arises for any integrand
 of bounded variation in the usual sense.
 We get $\var(\hat\mu)\le V_{\hk}(f)^2/n^2$
 because $D_n^*$ for the stratified sample
-cannot be larger than $1/n$. \art{[Let's double check this.]}
+cannot be larger than $1/n$. \art{[Let's double check this. Checked!]}
+% D_n^* will be the unanchored discrepancy of some 
+% interval $[k/n,k/n+b)$ for $b<1/n$.  That interval will 
+% have discrepancy at most max(b/n,(1-b)/n).
 For illustration we choose a function with $V_{\hk}(f)=1$
 for which we know exactly what the RQMC variance is
 for $n$ a power of $2$.
@@ -1313,17 +1334,26 @@ $O(N^{-\theta/(1+\theta)})$.
 It remains to find a reliable way to choose $n$
 empirically. 
 
-It also remains to find a way to
-use RQMC in confidence sequences.  In numerical
-integration problems, if $n$ is not small enough
-to get a good answer then $n+1$ will also be
-too small to get a good answer. It is more reasonable
-to consider a range of values $n$ that grow geometrically
-not arithmetically \cite{sobo:1998}. \art{I think this is the one where Sobol said that.}  A confidence sequence for geometrically
+\art{[Reworded.] It also remains to find a good way to
+use RQMC in confidence sequences as opposed
+to confidence intervals.   We might
+set up $R$ independent infinite sequences of RQMC
+points and then stop them at the first $n$
+where they provide a $1-\alpha$ interval
+narrower than some $\epsilon$.  In a task
+like that it makes sense to only use
+$n=2^k$ for integers $k$. 
+That is partly because powers of two are good
+for scrambled Sobol' points, but also because
+in RQMC it is generally advisable to study
+sample sizes $n$ that grow geometrically
+not arithmetically \cite{sobo:1998}.  The
+idea is that if $n$ is not large enough to get
+a good answer, then $n+1$ is unlikely to be
+much of an improvement.
+A confidence sequence based on geometrically
 growing $n$ would not have to be as wide as one for arithmetically
-growing $n$.  \art{I think Sobol' might have looked at this
-for the case $\{n,2n\}$.}
-
+growing $n$.}
 
 
 \section*{Acknowledgments}
@@ -1336,6 +1366,7 @@ grant DMS-2152780.
 
 \art{TODO: We need tidy up references: capitalizations,
 consistent name vs initials.}
+
 \bibliographystyle{plain}
 \bibliography{FJH25,FJHown25,ebci4rqmc}
 
