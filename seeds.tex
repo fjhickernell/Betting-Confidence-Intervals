@@ -45,15 +45,15 @@ Nset $\gets$ set of budget sizes $N$\\
 M $\gets$ number of repeated confidence interval constructions\\
 $D\gets$ max(dset)\\
 For $N\in\mathrm{N set}$\\
-\tab For $m=1,\dots,M$\\
-\tab\tab For $n\in\mathrm{n set(N)}$\\
-\tab\tab\tab $R=N/n$\\
-\tab\tab\tab For $r=1,\dots,R$\\
-\tab\tab\tab\tab Make QMC point set $\qmc(N,m,n,r)\in\real^{n\times D}$\\
-\tab\tab\tab\tab Make MC point set $\mc(N,m,n,r)\in\real^{n\times D}$\\
-\tab\tab\tab\tab For $d\in\mathrm{dset}$\\
-\tab\tab\tab\tab\tab $X(\qmc)\gets$ first $d$ columns of $\qmc(N,m,n,r)$\\
-\tab\tab\tab\tab\tab $X(\mc)\gets$ first $d$ columns of $\mc(N,m,n,r)$\\
+\tab For $n\in\mathrm{n set(N)}$\\
+\tab\tab $R=N/n$\\
+\tab\tab Make QMC point set $X^\mathrm{QMC} \gets \qmc(M,R,n,D)\in\real^{M \times R \times  n\times D}$\\
+\tab\tab Make MC point set $X^\mathrm{IID} \gets \mc(M,R,n,D)\in\real^{M \times R \times n\times D}$\\
+\tab\tab For $d\in\mathrm{dset}$\\
+\tab\tab\tab For $m=1,\dots,M$\\
+\tab\tab\tab\tab For $r=1,\dots,R$\\
+\tab\tab\tab\tab\tab $X(\qmc)\gets X^\mathrm{QMC}_{m,r,0:n,0:d}$ \\
+\tab\tab\tab\tab\tab $X(\mc)\gets X^\mathrm{IID}_{m,r,0:n,0:d}$\\
 \tab\tab\tab\tab\tab For $g\in\mathrm{gset}$\\
 \tab\tab\tab\tab\tab\tab $Y(\qmc,N,m,n,r,d,g)\gets$ average $g$ on $X(\qmc)$\\
 \tab\tab\tab\tab\tab\tab $Y(\mc,N,m,n,r,d,g)\gets$ average $g$ on $X(\mc)$\\
