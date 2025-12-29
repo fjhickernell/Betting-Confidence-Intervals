@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{natbib}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{paralist}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+%\usepackage{ulem}  % this underlines titles in the references so we should comment it out before the final version
+\def\UrlBreaks{\do\/\do-}
+\usepackage[paperwidth=8.5in, textwidth=6in]{geometry}
+\usepackage{setspace}
+
+\newtheorem{theorem}{Theorem}
+
+\newcommand{\art}[1]{\begingroup\color{blue}#1\endgroup}
+\newcommand{\aadit}[1]{\begingroup\color{orange}#1\endgroup}
+\newcommand{\fred}[1]{\begingroup\color{red}#1\endgroup}
+\newcommand{\aleksei}[1]{\begingroup\color{green}#1\endgroup}
+\usepackage[normalem]{ulem} % adds the \sout command
+
+% Lets make it look like writing on a blackboards
+% not a 1970s typewriter!
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\emptyset}{\varnothing}
+
+\input{FJHDef}
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\tran}{\mathsf{\scriptsize T}}
+
+\newcommand{\e}{\mathbb{E}}
+\newcommand{\bsa}{\boldsymbol{a}}
+\newcommand{\bsx}{\boldsymbol{x}}
+\newcommand{\bsz}{\boldsymbol{z}}
+\newcommand{\bsone}{\boldsymbol{1}}
+\newcommand{\bszero}{\boldsymbol{0}}
+
+\newcommand{\simiid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\toas}{\stackrel{\mathrm{a.s.}}{\to}}
+
+\newcommand{\dunif}{\mathbb{U}}
+\newcommand{\dnorm}{\mathcal{N}}
+
+\newcommand{\giv}{\!\mid\!} % 
+
+\newcommand{\prpl}{\text{PrPl}}
+\newcommand{\prplh}{\text{PrPl-H}}
+\newcommand{\prpleb}{\text{PrPl-EB}}
+\newcommand{\prplpm}{\text{PrPl}\pm}
+\newcommand{\eb}{\mathrm{E}}
+\newcommand{\ben}{\mathrm{Ben}}
+
+\newcommand{\ebi}{\mathrm{EBI}}
+\newcommand{\hbi}{\mathrm{HBI}}
+
+% commands in lower case give less carpal trouble
+\newcommand{\mc}{\mathrm{MC}}
+\newcommand{\rqmc}{\mathrm{RQMC}}
+\newcommand{\hk}{\mathrm{HK}}
+
+\newcommand{\rd}{\,\mathrm{d}}
+\newcommand{\phz}{\phantom{0}}
+
+\newcommand{\jmp}{\mathrm{jump}}
+\newcommand{\knk}{\mathrm{kink}}
+\newcommand{\smo}{\mathrm{smooth}}
+\newcommand{\fin}{\mathrm{finance}}
+
+\title{Reproducing the simulations in ``Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo''}
+\date{April 2025}
+\author{Aadit Jain\\Rancho Bernardo High School
+ \and
+ Fred J. Hickernell \\Illinois Institute of Technology
+ \and
+ Art B. Owen \\ Stanford University
+ \and
+ Aleksei G. Sorokin \\ Illinois Institute of Technology
+}
+\begin{document}
+\doublespacing
+
+\maketitle
+Here is information regarding the simulations for the paper ``Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo'':
+\begin{itemize}
+    \item The simulations, the data generated from the simulations, and the instructions to run the simulations are at the GitHub Repository \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC}.
+    \item The simulations were run in the Jupyter notebook
+\end{itemize}
+were run in the Jupyter notebook at \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/Betting\%20IID\%20vs\%20QMC.ipynb}. The data from these simulations is at the csv file \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/qmc_combined_results.csv}. The instructions to run the simulation notebook are at the README file \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/README.md}.
+\bibliographystyle{plain}
+\bibliography{FJH25copy,FJHown25copy,ebci4rqmc}
+
+\end{document}

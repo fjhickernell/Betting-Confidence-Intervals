@@ -6,14 +6,17 @@
 \usepackage{paralist}
 \usepackage{xspace}
 \usepackage{graphicx}
+\usepackage{hyperref}
 %\usepackage{ulem}  % this underlines titles in the references so we should comment it out before the final version
+
 
 \newtheorem{theorem}{Theorem}
 
 \newcommand{\art}[1]{\begingroup\color{blue}#1\endgroup}
 \newcommand{\aadit}[1]{\begingroup\color{orange}#1\endgroup}
 \newcommand{\fred}[1]{\begingroup\color{red}#1\endgroup}
-\newcommand{\alexei}[1]{\begingroup\color{green}#1\endgroup}
+\newcommand{\aleksei}[1]{\begingroup\color{green}#1\endgroup}
+\usepackage[normalem]{ulem} % adds the \sout command
 
 % Lets make it look like writing on a blackboards
 % not a 1970s typewriter!
@@ -67,76 +70,63 @@
 \newcommand{\fin}{\mathrm{finance}}
 
 \title{Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo}
-\date{March 2025}
-\author{List of authors}
+\date{April 2025}
+\author{Aadit Jain\\Rancho Bernardo High School
+ \and
+ Fred J. Hickernell \\Illinois Institute of Technology
+ \and
+ Art B. Owen \\ Stanford University
+ \and
+ Aleksei G. Sorokin \\ Illinois Institute of Technology
+}
 \begin{document}
 \maketitle
+
 \begin{abstract}
 Randomized quasi-Monte Carlo (RQMC) methods estimate the mean of a random
 variable by sampling an integrand
-at $n$ equidistributed points. For scrambled digital nets 
+at $n$ equidistributed points. For scrambled digital nets, 
 the resulting variance is typically $\tilde O(n^{-\theta})$ 
 where $\theta\in[1,3]$ depends on the smoothness of the
 integrand and $\tilde O$ neglects logarithmic factors.
 While RQMC can be far more accurate than plain Monte Carlo (MC)
 it remains difficult to get confidence intervals on RQMC
-estimates.  We investigate empirical Bernstein confidence intervals (EBCI) and
-some recent hedged betting confidence intervals (HBCI) of Waudby-Smith and Ramdas
+estimates.  We investigate some empirical Bernstein confidence intervals (EBCI)
+and hedged betting confidence intervals (HBCI), both from Waudby-Smith and Ramdas (2024),
 when the random variable of interest is subject to known bounds.
 When there are $N$ integrand evaluations
-partitioned into $R$ independent replicates using $n=N/R$
-RQMC points each, we show that the optimal point set size $n$ 
-for an oracle using a formula that matches Bennett's inequality
-grows as $N^{1/(\theta+1)}$ if the RQMC variance is $O(n^{-\theta})$.
+partitioned into $R$ independent replicates of $n=N/R$
+RQMC points, and the RQMC variance is $\Theta(n^{-\theta})$,
+then an oracle minimizing the width of a Bennett
+confidence interval would choose $n =\Theta(N^{1/(\theta+1)})$. 
 The resulting intervals have
-a width that is $O(N^{-\theta/(\theta+1)})$. 
-This is  much narrower
-than we would get under MC
-but it is also $O(N^{(\theta - 1)/(\theta+1)})$ times as
-large as the RQMC standard error $O(N^{-\theta/2})$.
-The HBCI intervals have widths that asymptotically match the
-ones from Bennett's inequality. We find for a range of different
-RQMC settings that they also attain minimal widths at
-small values of $n$. In our experiments that minimal width
-intervals are somewhat smaller than those the optimize
-Bennett's inequality and the HBCI intervals' widths
-approach those of Bennett's inequality from above.
+a width that is $\Theta(N^{-\theta/(\theta+1)})$. 
+Our empirical investigations had optimal values of
+$n$ grow slowly with $N$,
+HBCI intervals that were usually narrower than the EBCI
+ones, and optimal values of $n$ for HBCI that were equal to or
+smaller than the ones for the oracle. 
 \end{abstract}
 
-\art{[I'm writing more of it as what would
-happen at $O(N^{-\theta})$. This reduces clutter and I
-will try to explain it so that the statements
-we make are still correct.]}
 
 
-
-% \aadit{Are we going to talk about the Hedged Betting CI as I did simulations on those as well and they are likely the tightest non-asymptotic CIs?}
-% \art{Yes, we can put those in as a numerical comparison, even if we don't have theory for them.  From memory, I think they come out slightly narrower
-% than the intervals we study but maybe asymptotically equivalent.}
-
-% \art{Earlier we discussed a comparison with methods that use a
-% bounded kurtosis. There would be some difficulties including that
-% in this paper.  That method starts with a fixed error bound $\epsilon$. So
-% it is more comparable to confidence sequences that we have not
-% studied.}
 
 \section{Introduction}
 
 We study the combination of randomized quasi-Monte
-Carlo (RQMC) integration \art{to estimate an expectation} 
-with some non-asymptotic \art{(finite sample valid)} methods
+Carlo (RQMC) integration to estimate an expectation
+with some non-asymptotic (finite sample valid) methods
 to get a confidence interval for such an expectation.
 RQMC has significant accuracy  benefits over plain Monte Carlo (that
-we outline below), but so far most of the confidence intervals based on
-RQMC estimates have had justifications that were asymptotic
-in their sample size \cite{LEcEtal24a}. Some other methods use assumptions about the integrand that might be impossible to verify in practice \cite{HicJim16a,JimHic16a}. Empirical Bernstein and some related betting
+we outline below), but the usual confidence intervals based on
+RQMC estimates have justifications that are asymptotic
+in their sample size \cite{LEcEtal24a}. 
+Empirical Bernstein and some related betting
 methods (described below) give finite sample assurances for bounded integrands.  Specifically, if it is known that the integrand values must lie
 between $0$ and $1$, then those methods can construct a confidence
 interval that has at least $1-\alpha$ probability to contain
 the integral's value.  This confidence level holds for any integrand
-satisfying the given bounds.  Any other finite interval $[a,b]$ known
-to contain the integrand can, after linear transformation
-be assumed to be the interval $[0,1]$.
+satisfying the given bounds.  
 
 The context for our work is as follows.
 Many scientific problems require the numerical 
@@ -165,52 +155,53 @@ improve on the convergence rate of QMC methods obtaining
 an RMSE of $\tilde O(n^{-3/2})$ under a smoothness assumption
 \cite{Owe97,Owe08a} on the integrand.  
 
-Most confidence interval methods for RQMC are asymptotic
-with coverage levels that converge to their desired level,
-such as 95\%, as the amount of sampling increases.  The GAIL \fred{\cite{Gail_ug} and qmcpy \cite{QMCPy2020a} } libraries provides an exception, so long as one can
-provide some outside information on the integrand.  This could
-be an assumption about a kurtosis quantity or it could be
-an assumption about the way that coefficients in
-a suitable orthogonal decomposition of the integrand decay.
-\art{Here, we study RQMC confidence intervals
+In addition to asymptotic confidence interval methods for RQMC,
+some other papers have provided finite sample uncertainty quantifications
+based on additional assumptions. For purely independent and identically distributed (IID) sampling, knowing a bound on the kurtosis facilitates a finite sample confidence interval for the mean of a random variable in terms of the sample mean and the sample standard deviation \cite{HicEtal14a}.  For deterministic QMC sampling of $\bsx \sim \mathbb{U}[0,1]^d$ with lattices or digital nets, assuming that the coefficients in a suitable orthogonal decomposition of $f : [0,1]^d \to \reals$ decay reasonably, one may derive a deterministic error bound on $\mu  = \mathbb{E}[f(\bsx)]$ \cite{HicJim16a,HicEtal17a,JimHic16a,JagSor23a}.  A different approach is to assume that $f$ is a realization of a Gaussian process and construct a credible interval for $\mathbb{E}[f(\bsx)]$.  If the covariance kernel and the sampling nodes are well-matched, the computational effort required is nearly $O(n)$ and not the $O(n^3)$ effort typically required for such credible intervals \cite{RatHic19a,JagHic22a}.  The GAIL \cite{Gail_ug} and QMCPy \cite{QMCPy2020a} libraries implement  these finite sample uncertainty quantifications under the assumptions outlined above.
+%The GAIL \cite{Gail_ug} and QMCPy \cite{QMCPy2020a} libraries provide finite sample uncertainty quantification, so long as one can
+%provide some outside information on the integrand.  
+%This could be an assumption about a kurtosis quantity.
+%These papers \cite{HicJim16a,JimHic16a} use
+%assumptions about the way that coefficients in
+%a suitable orthogonal decomposition of the integrand decay
+%to compute intervals around a QMC estimate that contain the integral.
+
+Here, we study RQMC confidence intervals
 assuming that the integrand is bounded between
 zero and one.  The advantage of this assumption is that
-there are more settings where we are certain that it holds.}
-We can then get finite sample confidence
-intervals with coverage of at least 95\% or some other desired level.
+there are more settings where we are certain that it holds.
+%We can then get finite sample confidence
+%intervals with coverage of at least 95\% or some other desired level.
 
 The non-asymptotic confidence intervals that we emphasize are the
-recently developed \art{hedged betting confidence intervals}
-and some related predictable plug-in empirical Bernstein
-confidence intervals, both from \cite{WauRam24a}. They are derived
+recently developed hedged betting confidence intervals (HBCI) and some related predictable plug-in empirical Bernstein
+confidence intervals (EBCI), both from \cite{WauRam24a}. They are derived
 from some infinite confidence sequences and we believe that
 they provide the narrowest confidence intervals among
 currently available methods.
 
 Section~\ref{sec:notation} gives our notation
 and some definitions and background on quasi-Monte
-Carlo, randomized quasi-Monte Carlo, empirical Bernstein
-intervals and the \art{hedged betting}
-intervals of \cite{WauRam24a}. In Section \ref{sec:asymptotic}
+Carlo, randomized quasi-Monte Carlo, and the EBCI and HBCI of \cite{WauRam24a}. In Section \ref{sec:asymptotic}
 we show how splitting $N$ observations into $R=N/n$ independent
-replicates of $n$ RQMC point sets can give narrower
-empirical Bernstein confidence intervals \art{for an oracle
-that knows the RQMC variance at each $n$}.  The extent of the
+replicates of $n$ RQMC point sets can give narrower EBCI 
+than MC does for an oracle
+that knows the RQMC variance at each $n$.  The extent of the
 narrowing depends on the RQMC convergence rate which
 varies from problem to problem. Perhaps surprisingly,
 the more effective RQMC is, the smaller the optimal value
-of $n$ becomes.  \art{For an RQMC variance  proportional to $n^{-\theta}$
-taking $n$ proportional to $N^{1/(\theta+1)}$}
-%\art{When the RQMC variance is $O(n^{-\theta})$, then} we find that $n=O(N^{1/(\theta+1)})$ \fred{Do we need $\tilde O$ here and below?} \art{[I think so, thanks. Or we can couch it differently as above. Not yet
-%sure what will be best.]} 
-gives the narrowest intervals.  Those intervals are narrower
-than MC-based intervals by a factor of $O(N^{(1-\theta)/(2+2\theta)})$.
-The intervals themselves have widths that are
-$O(N^{-\theta/(\theta+1)})$\fred{, which makes them $\art{O}(N^{(\theta_1)/(\theta+1)})$ \art{wider} than the root mean squared RQMC error}. Section~\ref{sec:finite} makes
+of $n$ becomes.  For an RQMC variance  proportional to $n^{-\theta}$,
+taking $n$ proportional to $N^{1/(\theta+1)}$
+gives the narrowest intervals.  
+The resulting interval widths are
+$\Theta(N^{-\theta/(\theta+1)})$ which can be much wider than the 
+assumed RQMC
+standard deviation of $\Theta(N^{-\theta/2})$.
+Section~\ref{sec:finite} makes
 some computational investigations.  As predicted by the theory
-the best values of $n$ to use grow slowly with $N$.
-\art{The empirically best values are also smaller
-than the oracle values. [To check]}
+the best values of $n$ to use grew slowly with $N$.
+The empirically best values of $n$ for HBCI were no larger
+than the oracle values, and sometimes smaller.
 Section~\ref{sec:discussion} has some final comments
 and discussion.
 
@@ -221,8 +212,10 @@ We begin with some notation.
 We use $1\{E\}$ to denote a quantity that equals $1$
 when expression $E$ holds and is zero otherwise.
 The vectors $\bszero$ and $\bsone$ have all components
-equal to $0$ (respectively $1$) with a dimension
-given by context.
+equal to $0$ and $1$ respectively with a dimension
+given by context. We write $a_n = O(b_n)$ as $n\to\infty$ if there exists $C>0$ and $n_0<\infty$ with $|a_n|\le Cb_n$ whenever $n\ge n_0$.
+We write $a_n =\Omega(b_n)$ if there exists $C>0$ and $n_0<\infty$ with $a_n\ge Cb_n$ whenever $n\ge n_0$.
+We write $a_n = \Theta(b_n)$ if $a_n = O(b_n)$ and $b_n = O(a_n)$.
 
 \subsection{Intervals and martingales}
 
@@ -272,8 +265,6 @@ $$
 $$
 The confidence sequences from \cite{WauRam24a} are derived
 by applying Ville's inequality \cite{vill:1939} to nonnegative supermartingales.
-\art{[TODO: check whether they're actually using a submartingale argument.]}
-
 
 The problem we consider is to approximate the finite-dimensional
 integral
@@ -302,9 +293,7 @@ asymptotic $1-\alpha$ confidence interval for~$\mu$.
 QMC sampling replaces random points $\bsx_i$ by 
 deterministic points that more evenly sample the
 unit cube.  There are many ways to quantify that 
-property. The most elementary one is %\fred{[I would say that this is the most historically popular one, but I am not sure if it is still the most widely used.  To overcome the curse of dimensionality,  to make it feasible to compute for large sample sizes, and to make it symmetric with respect to the center of the cube, I would say that others are more widely used.] } \art{[I think it is the most widely written about, or most prominent. We could have a good debate over beer or coffee about when discrepancy is used and which is the most used.]} 
-is the
-star discrepancy:
+property. The most elementary one is the star discrepancy:
 $$
 D_n^* = D_n^*(\bsx_1,\dots,\bsx_n)=\sup_{\bsa\in[0,1]^d}
 \,\biggl| \frac1n\sum_{i=1}^n1\{\bsx_i\in[\bszero,\bsa)\}
@@ -334,18 +323,18 @@ perfect quantification of our uncertainty about $\mu$.
 It would be non-asymptotic and even non-probabilistic.
 Unfortunately, $D_n^*$ is generally very expensive
 to obtain and $V_{\hk}(f)$ is ordinarily far harder
-to compute than $\mu$. As a result~\eqref{eq:koksmahlawka}
-can show us that MC can be outperformed but does
+to compute than $\mu$. As a result, equation~\eqref{eq:koksmahlawka}
+shows us that MC can be outperformed but it does
 not provide a generally usable error estimate.
 
 RQMC methods generate random points $\bsx_i$ that
 simultaneously satisfy two properties:
 \begin{compactenum}[\quad\bf1)]
-\item $\bsx_i\sim\dunif[0,1]^d$, and
+\item $\bsx_i\sim\dunif[0,1]^d$, for all $i=1,\dots,n$, and
 \item $D_n^*(\bsx_1,\dots,\bsx_n)=\tilde O(n^{-1})$ almost surely.
 \end{compactenum}
 From the second property, $|\hat\mu-\mu|=\tilde O(n^{-1})$.
-As a result the MSE of RQMC is $\tilde O(n^{-2})$
+As a result the RMSE of RQMC is $\tilde O(n^{-1})$
 in the BVHK case.
 
 To get an approximate confidence interval from RQMC
@@ -358,11 +347,11 @@ $$
 $$
 for
 $$
-\hat\mu = \frac1R\sum_{r=1}^R\hat\mu_r
+\hat\mu = \frac1R\sum_{i=1}^R\hat\mu_i
 \quad\text{and}\quad
-S^2 = \frac1{R-1}\sum_{r=1}^R(\hat\mu_r-\hat\mu)^2.
+S^2 = \frac1{R-1}\sum_{i=1}^R(\hat\mu_i-\hat\mu)^2.
 $$
-Here $S^2/R$ is an unbiased estimate of the RMSE
+Here $S^2/R$ is an unbiased estimate of the MSE
 of the pooled estimate $\hat\mu$.
 The confidence level $1-\alpha$ is obtained in
 the limit as $R\to\infty$ \cite{naka:tuff:2024}
@@ -391,21 +380,21 @@ strict. For example, when $d\ge2$, step discontinuities in the integrand
 $f$ ordinarily make $V_{\hk}(f)$ infinite unless those discontinuities
 are axis parallel \cite{Owe05a}. This makes QMC
 unattractive for estimating integrals of binary
-valued functions, while RQMC will still attain
-$o(1/n)$ RMSE for them so long as the integrand
-is in $L^2$.
+valued functions, while RQMC will still attain an
+RMSE that is $o(n^{-1/2})$.
+%Strictly speaking we need the function to be measurable. But even more strictly, we already assumed that when we assumed that $\mu$ exists.
 
 While there are numerous RQMC methods in use, we
 will restrict ourselves here to scramblings of digital nets
-and sequences, such as the ones of \cite{Sob67}.
-The scramblings can be those of \cite{Owe95} or
-\cite{Mat98}.
-
+and sequences, such as the ones of Sobol' \cite{Sob67}.
+Our variance formulas assume that the scramblings 
+are either those of \cite{Owe95} or
+\cite{Mat98}.  In our computations we used the
+linear matrix scramble of \cite{Mat98} with a digital shift.
 
 While RQMC methods yield very good accuracy, most
 of the known confidence interval methods for them
-supply only asymptotic confidence. That is ordinarily
-asynptotice as $R\to\infty$ \cite{naka:tuff:2024}.
+supply only asymptotic confidence as $R \to \infty$ \cite{naka:tuff:2024}. 
 In some very limited settings
 there are central limit theorems for $\hat\mu$
 as $n\to\infty$ \cite{Loh01}.
@@ -419,8 +408,7 @@ vanishes at a faster rate in $n$.
 \subsection{Hoeffding and Empirical Bernstein intervals}
 
 We would like a confidence interval that is non-asymptotic,
-meaning that the coverage guarantee~\eqref{eq:ci} holds for 
-for limits $A$ and $B$ computed from a sample of size $n$.
+meaning that the coverage guarantee~\eqref{eq:ci} holds for  limits $A$ and $B$ computed from a sample of size $n$.
 This can often be obtained under parametric statistical
 models in which the distribution of $f(\bsx)$  belongs
 to a known finite dimensional family such as the Gaussian
@@ -429,7 +417,7 @@ and so we prefer a nonparametric method with non-asymptotic
 confidence.  
 
 There is a theorem of Bahadur and Savage \cite{BahSav56} that
-reveals sharp constrains on our ability to construct
+reveals sharp constraints on our ability to construct
 nonparametric and non-asymptotic confidence
 intervals.  Here is the description from \cite{err4qmc}:
 \begin{quote}They consider a set $\cf$ of distributions on $\real$.
@@ -456,19 +444,17 @@ This violates their clause (ii).
 After a linear transformation we take that interval
 to be $[0,1]$.
 
-We will use $Y_i = f(\bsx_i)$ to represent 
-the values in our integration methods, and 
-set $\bar Y_m = (1/m)\sum_{i=1}^mY_i$.  
-We use $m$ here in order to reserve $n$ for a
-different sample size quantity later.
-\art{[Probably change it to $R$ later because $m$ is
-used a lot in the betting nomenclature.]}
+We will use $Y_i = \hat\mu_i$ for $i=1,\dots,R$
+to represent the values of the $R$ replicated
+RQMC points that go into our confidence interval
+calculation.
+We set $\bar Y_R = (1/R)\sum_{i=1}^RY_i$.  
 We assume that $Y_i$ are IID with the same
 distribution as $Y$ and that
 $0\le Y\le1$ holds with probability one.
 Then
 \begin{align}\label{eq:hoeffding}
-\bar Y_m \pm \sqrt{\frac{\log(2/\alpha)}{2m}}
+\bar Y_R \pm \sqrt{\frac{\log(2/\alpha)}{2R}}
 \end{align}
 for $0<\alpha<1$ is a $1-\alpha$ confidence interval for $\mu=\e(Y_i)$.  Equation~\eqref{eq:hoeffding} gives
 the confidence interval of Hoeffding \cite{hoef:1963}.  The interval is not always
@@ -490,23 +476,21 @@ a known value $\sigma^2=\var(Y)$ or even a sample estimate
 of that variance.  Those bounds can be used to get
 improved confidence intervals.
 
-%\art{[Bennett's inequality in the form we use
-%does not appear in Bennett \cite{benn:1962}.]
 Theorem 3 of Maurer and Pontil \cite{maurer2009empirical}
 is that
 $$
-\e(Y) - \frac1m\sum_{i=1}^mY_i \le \sqrt{\frac{2\sigma^2\log(1/\delta)}m}
-+ \frac{\log(1/\delta)}{3m}.
+\e(Y) - \frac1R\sum_{i=1}^RY_i \le \sqrt{\frac{2\sigma^2\log(1/\delta)}R}
++ \frac{\log(1/\delta)}{3R}.
   $$
 holds with probability at least $1-\delta$.
 They call this Bennett's inequality, because it derives
 from an inequality in \cite{benn:1962}. 
-\art{They do not supply a proof, but it can be proved from Bernstein's
-inequality given as Theorem 3 of \cite{bouc:lugo:bous:2003}.}
+They do not supply a proof, but it can be proved from Bernstein's
+inequality given as Theorem 3 of \cite{bouc:lugo:bous:2003}.
 Taking $\delta =\alpha/2$ we get
 \begin{align}\label{eq:bennettci}
-\bar Y_m \pm \sqrt{\frac{2\sigma^2\log(2/\alpha)}m}
-+ \frac{\log(2/\alpha)}{3m}
+\bar Y_R \pm \sqrt{\frac{2\sigma^2\log(2/\alpha)}R}
++ \frac{\log(2/\alpha)}{3R}
 \end{align}
 as a $1-\alpha$ confidence interval for $\mu$.
 We will make use of the Bennett confidence
@@ -517,12 +501,12 @@ In most practical settings where $\mu$ is unknown,
 $\sigma^2$ will also be unknown. Replacing $\sigma^2$
 by $s^2$ in~\eqref{eq:bennettci} would not always
 give a valid confidence interval.  
-Theorem 4 of \cite{maurer2009empirical} show that
-for $m\ge2$
+Theorem 4 of \cite{maurer2009empirical} shows that
+for $R\ge2$
 \begin{align}\label{eq:eb}
-    \bar Y_n\pm
-\sqrt{\frac{2s^2\log(4/\alpha)}m}
-+ \frac{7\log(4/\alpha)}{3(m-1)}.
+    \bar Y_R\pm
+\sqrt{\frac{2s^2\log(4/\alpha)}R}
++ \frac{7\log(4/\alpha)}{3(R-1)}.
 \end{align}
 is a $1-\alpha$ confidence interval for $\mu$.
 This is called an empirical Bernstein confidence
@@ -530,28 +514,24 @@ interval named after an inequality of Bernstein
 that is similar to Bennett's.  We see that both terms
 on the right hand side of~\eqref{eq:eb} are larger
 than the ones in the Bennett interval~\eqref{eq:bennettci}.
-Their interval has improved constants compared to the original
+Their interval has improved asymptotic constants compared to the original
 empirical Bernstein inequality from
-\cite{audi:muno:szep:2007}. Some betting intervals
-in \cite{WauRam24a} provide a further improvement.
-
-
-
-% tricky to find a detailed citation to Bernstein's work that I know is correct
-
+\cite{audi:muno:szep:2007}. The EBCI and HBCI
+from \cite{WauRam24a} provide a further asymptotic improvement.
 
 \subsection{Betting methods}
 
 Our interest in this problem was sparked in part by some recent
 work by \cite{WauRam24a} on confidence intervals generated
 by betting arguments.  They consider a more general setting
-of confidence sequences, as in equation ~\eqref{eq:cs}, 
+of confidence sequences, as in equation \eqref{eq:cs}, 
 that can then be specialized to confidence intervals as needed.  
 For random $Y_i\in[0,1]$ they assume
 that $\e(Y_i\giv Y_1,\dots,Y_{i-1})=\mu$ for all $i\ge1$ 
 without assuming
 that the $Y_i$ are identically distributed or even that
-they are independent. For $i=1$, the conditional expectation 
+they are independent.
+For $i=1$, the conditional expectation 
 above is simply $\e(Y_1)=\mu$.
 
 Suppose that the conditional mean is really $\mu$ and 
@@ -562,21 +542,19 @@ make a series of bets against $H_0(m)$
 as the $Y_i$ are revealed in order
 and have an expected fortune that grows without bound.
 Just prior to time $i$, the bettor picks a value
-$\lambda_i\in(-1/(m-1),1/m)$. Let's ignore $m\in\{0,1\}$
-although \cite{WauRam24a} include those values. The bettor's
-capital at time $t\ge1$ is
+$\lambda_i\in(-1/(1-m),1/m)$. 
+The bettor's capital at time $t\ge1$ is
 $$
 \ck_t(m)= \prod_{i=1}^t\bigl(1+\lambda_i(m)(Y_i-m)\bigr).
 $$
-A bet with $\lambda_i(m)>0$ pays off if $Y_i>m$ which
-increases their capital. Choosing $\lambda_i<0$ is a 
-way to bet that $Y_i<m$. \art{Losing bets decrease
-their capital.}
+Taking $\lambda_i(m)>0$ amounts to betting that $Y_i>m$. Then their capital is multiplied by $1+\lambda_i(Y_i-m)$. If they are
+right then their capital grows, but if $Y_i<m$, then it shrinks.
+To take $\lambda_i(m)<0$ is to bet that $Y_i<m$.
 
 Section 4 of \cite{WauRam24a} notes that $\ck_t(\mu)$ is
-a \art{nonnegative} martingale, so that $\e(\ck_t(\mu))=1$ for all $t\ge1$.
+a nonnegative martingale, so that $\e(\ck_t(\mu))=1$ for all $t\ge1$.
 There is no way for the bettor to pick bet sizes $\lambda_i(\mu)$
-to make an expected profit.   \art{Then from Ville's Theorem}
+to make an expected profit.   Then from Ville's Theorem
 $$
 \Pr( \ck_t(\mu)\le 1/\alpha,\ \forall t\ge1)\ge1-\alpha.
 $$
@@ -585,10 +563,10 @@ there is at most probability $\alpha$ that it will
 ever go above $1/\alpha$.  As a result we can get
 a confidence sequence by retaining at time $t$,
 all the values $m$ for 
-which $\max_{1\le\tau\le t}\ck_t(m)\le1/\alpha$.
+which $\max_{1\le\tau\le t}\ck_\tau(m)\le1/\alpha$. 
 This idiom uses a hypothetically infinite ensemble of 
 bettors to do this, but \cite{WauRam24a} give
-implementable algorithms for it, some of which we present below.
+implementable algorithms for it.
 
 The other side of the coin is that there are good betting
 strategies when $m\ne\mu$.  Under those, the bettor's expected fortune
@@ -596,24 +574,16 @@ will grow steadily when $m\ne\mu$. That is what one needs
 to make a confidence sequence not just valid but also useful
 in having a width that converges to zero with increased sampling.
 
-
-
-
-In addition to the capital process described
-above, \art{that they call the `hedged' process}
-they have some other processes that
-produce different martingales. One of them produces confidence
+One version of the betting strategy above produces confidence
 sequences that are analogous to Hoeffding intervals
-and another produces sequences analogous to the
-empirical Bernstein intervals.  \art{We present the 
-hedged process confidence intervals and the
-predictable plug-in empirical Bernstein
-intervals, but not the predictable plug-in Hoeffding intervals. Those
-do not use a sample variance, and they are wider than the others for 
-larger $t$.}
+and another produces empirical Bernstein intervals.  We present
+the predictable plug-in EBCI followed by a hedged betting interval that
+combines two betting strategies.
+We do not include the predictable plug-in Hoeffding intervals. Those
+do not use a sample variance, and they are 
+wider than the others for larger $t$.
 
-
-Both families of confidence intervals make use of running sample moments
+The confidence intervals we study make use of running sample moments
 $$
 \hat\mu_t = \frac{1/2+\sum_{i=1}^tY_i}{t+1}
 \quad\text{and}\quad
@@ -621,19 +591,20 @@ $$
 $$
 with the means and standard deviations 
 both biased slightly towards $1/2$.
-\art{In their `predictable plug-in empirical Bernstein'
-intervals, the betting amounts are}
+In their `predictable plug-in empirical Bernstein'
+intervals, the betting amounts are
 $$
 \lambda_t^\prpleb  = \sqrt{\frac{2\log(2/\alpha)}{\hat\sigma^2_{t-1}t\log(1+t)}}\,\wedge c
 $$
 for some $c\in(0,1)$ with $c=1/2$ or $3/4$
 given as reasonable defaults. 
+Note that this method only bets that $Y_i>m$.
 Theorem 2 of \cite{WauRam24a} 
 gives a $1-\alpha$ confidence sequence
-$$
+\begin{align}\label{eq:purpleinterval}
 C_t^\prpleb = \frac{\sum_{i=1}^t\lambda_iY_i}{\sum_{i=1}^t\lambda_i}
 \pm \frac{\log(2/\alpha)+\sum_{i=1}^t\nu_i\psi_{\eb}(\lambda_i)}{\sum_{i=1}^t\lambda_i},
-$$
+\end{align}
 where
 $$
 \nu_i = 4(Y_i-\hat\mu_{i-1})^2
@@ -648,19 +619,25 @@ of course we can intersect any of these intervals with $[0,1]$.
 These confidence sequences can be specialized to confidence
 intervals when we have a fixed target sample size $R$
 in mind.  For that case \cite{WauRam24a}
-recommend
+recommends
 \begin{align}\label{eq:purplelambda}
 \lambda_i^{\prpleb(R)} = \sqrt{\frac{2\log(2/\alpha)}{R\hat\sigma^2_{i-1}}}\,\wedge c,\quad i=1,\dots,R.
 \end{align}
-Later $R$ will be a number of RQMC replicates.
+%Later $R$ will be a number of RQMC replicates.
 The above formula for $\lambda_i$ uses the ordering
 of the data values and puts unequal weight on the
 $R$ different $Y_i$. There is a permutation strategy
 in \cite{WauRam24a} to treat the $Y_i$ values more
 symmetrically, but they report that it makes little difference.
 
+The EBCI we study take the form
+$$
+\bigcap_{1\le\tau\le t}C_t^{\prpleb(R)}
+$$
+where $C_t^{\prpleb(R)}$ is the interval in~\eqref{eq:purpleinterval}
+using $\lambda_i$ from~\eqref{eq:purplelambda}.
 Equation (17) of \cite{WauRam24a} gives the
-scaled half width of the \prpleb{} confidence intervals as
+scaled half width of these EBCI as
 $$
 \sqrt{R}\biggl(\frac{\log(2/\alpha)+\sum_{i=1}^R\nu_i\psi_\eb(\lambda_i)}{\sum_{i=1}^R\lambda_i} \biggr)\toas \sigma\sqrt{2\log(2/\alpha)}
 $$
@@ -668,56 +645,41 @@ as $R\to\infty$.  The corresponding limit for the empirical
 Bernstein CIs of \cite{maurer2009empirical}
 is $\sigma\sqrt{2\log(4/\alpha)}$.
 
-\art{The hedged capital confidence interval of \cite{WauRam24a}
-is based on the $\ck_t(m)$ processes.  It uses
+The hedged betting process of \cite{WacMenSch08} works as follows.
+For positive predictable sequences $\lambda_i^+(m)$ and $\lambda_i^-(m)$ defined below, they use capital processes
 $$
-\lambda_t^\prpl = \sqrt{\frac{2\log(2/\alpha)}{R\hat \sigma^2_{t-1}}}.
+K_t^+(m) = \prod_{i=1}^t(1+\lambda_i^+(m)(Y_i-m)\quad\text{and}\quad
+K_t^-(m) = \prod_{i=1}^t(1-\lambda_i^+(m)(Y_i-m)
 $$
-when there are to be $R$  observations. 
-}
+that bet, respectively, on $Y_i>m$ and $Y_i<m$.  The hedged process is
+$$
+K_t^\pm(m) = \max\bigl(\theta K_t^+(m),(1-\theta)K_t^-(m)\bigr)
+$$
+for $0\le\theta\le1$. For any $\theta$, $K_t^\pm(\mu)$ is a nonnegative martingale
+hence subject to Ville's theorem.  The supplement to \cite{WauRam24a}
+suggests $\theta=1/2$ as a default.  If $m\ne\mu$ then $K_t^\pm(m)$ will tend to grow with $t$.
+Of course the hedging $\theta$ has nothing to do with the RQMC variance
+rate $\theta$ and the quantities are distinct enough that no confusion
+should arise.
 
-\art{[This is strange. I don't see a $\wedge c$ here that I would have expected.]}
-\\
-\aadit{Here's the math behind the Hedged Process:
-\begin{equation} \label{eq:24}
-\begin{aligned}
-    K^\pm_t (m) &:= \max \left\{ \theta K^+_t (m), (1 - \theta) K^-_t (m) \right\}, \\
-    \text{where} \quad K^+_t (m) &:= \prod_{i=1}^{t} \left( 1 + \lambda^+_i (m) \cdot (X_i - m) \right), \\
-    \text{and} \quad K^-_t (m) &:= \prod_{i=1}^{t} \left( 1 - \lambda^-_i (m) \cdot (X_i - m) \right).
-\end{aligned}
-\end{equation}
-with \( \theta, m \in [0,1] \).
-\setcounter{theorem}{1}
-\begin{theorem}[Hedged capital CS (Hedged)]  
-Suppose \( (X_t)_{t=1}^{\infty} \sim P \) for some \( P \in P^{\mu} \). Let \( (\tilde{\lambda}^+_t)_{t=1}^{\infty} \) and \( (\tilde{\lambda}^-_t)_{t=1}^{\infty} \) be real-valued predictable sequences not depending on \( m \), and for each \( t \geq 1 \) define  
-\begin{equation}  
-\lambda^+_t (m) := |\tilde{\lambda}^+_t| \wedge \frac{c}{m}, \quad  
-\lambda^-_t (m) := |\tilde{\lambda}^-_t| \wedge \frac{c}{1 - m},  
-\end{equation}  
-for some \( c \in [0,1) \) (some reasonable defaults being \( c = 1/2 \) or \( 3/4 \)). Then\\
+The hedged betting process produces confidence sequences and, as they did
+for the empirical
+Bernstein processes, they recommend a way to produce a confidence interval
+based on $R$ sample values.  For that
+they take
+$$\lambda_i^+(m)=|\tilde\lambda_i^\pm|\wedge\frac{c}m
+\quad\text{and}\quad
+\lambda_i^-(m)=|\tilde\lambda_i^\pm|\wedge\frac{c}{1-m}
+$$
+for $i=1,\dots,R$ where 
+$$\tilde\lambda_i^\pm=\sqrt{\frac{2\log(2/\alpha)}{R\hat\sigma^2_{i-1}}}$$
+for $c\in[0,1)$, with suggested defaults of $c=1/2$ or $c=3/4$.
+The confidence interval is then
+$$\bigl\{m\in[0,1]\mid \max_{1\le i\le R}K_i^\pm(m)\le1/\alpha\bigr\}.$$
 
-$ B^\pm_t := \{ m \in [0,1] : K^\pm_t (m) < 1/\alpha \} $ forms a \( (1 - \alpha) \)-CS for \( \mu \), \\
 
-as does its running intersection \( \bigcap_{i \leq t} B^\pm_i \). Furthermore, \( B^\pm_t \) is an interval for each \( t \geq 1 \).  
-\end{theorem}  
-It is recommended to set \( \tilde{\lambda}^+_t = \tilde{\lambda}^-_t = \lambda^{\text{PrPl}\pm}_t \) as
-\begin{equation} \label{eq:26}
-   \lambda^{\text{PrPl}\pm}_t := \sqrt{\frac{2 \log (\frac{2}{\alpha})}{\hat{\sigma}^2_{t-1}t \log (t + 1)}}, \quad \hat{\sigma}^2_t := \frac{\frac{1}{4} + \sum_{i=1}^{t} (X_i - \hat{\mu}_i)^2}{t + 1}, \quad \hat{\mu}_t := \frac{\frac{1}{2}+ \sum_{i=1}^{t} X_i}{t + 1},
-\end{equation}
-for each \( t \geq 1 \), and truncation level \( c := \frac{1}{2} \, \text{or} \, \frac{3}{4}
- \). \\
  
-\noindent \textbf{Remark 3} \quad Theorem 3 yields tight hedged CIs for a fixed sample size \( n \). Recalling (26), it is recommended to use \( \bigcap_{i \leq n} B^\pm_i \), and setting \( \tilde{\lambda}^+_t = \tilde{\lambda}^-_t = \tilde{\lambda}^\pm_t \) given by
-\begin{equation} \label{eq:27}
-    \tilde{\lambda}^\pm_t := \sqrt{\frac{2 \log( \frac{2}{\alpha})}{n \hat{\sigma}^2_{t-1}}}.
-\end{equation}
-\\
-
-\noindent Bets can be chosen such that hedged capital CSs and CIs converge at the optimal rates of \( O \left( \sqrt\frac{\log \log t}{t} \right) \) and \( O \left( \frac{1}{\sqrt{n}} \right) \) respectively. \\ 
-
-\noindent The recommendations above don't satisfy the assumptions proving the convergence rate of the Hedged CIs. Yet, the above recommendations tighten the CIs (found through simulations), especially in low-variance, asymmetric settings. }
 \section{Asymptotic confidence interval comparisons}\label{sec:asymptotic}
-
 Our confidence intervals will use $R$ IID replicates that each
 use $n$ RQMC points in $[0,1]^d$.  That takes $N=nR$
 evaluations of $f$. 
@@ -732,16 +694,14 @@ scrambles for all $R$ point sets. Let $\sigma^2_n = \var(Y_i)$.
 We know that $\sigma^2_n = o(n^{-1}).$
 For the BVHK case, $\sigma^2_n=\tilde O(n^{-2})$.  
 For the smooth case,
-$\sigma^2_n=\tilde O(n^{-3})$.  
+$\sigma^2_n=\tilde O(n^{-3})$.
 
-\art{We know from \cite{WauRam24a} that the widths of their
-predictable plugin empirical Bernstein intervals approaches
+We know from \cite{WauRam24a} that the widths of their
+predictable plug-in EBCI approaches
 that of some Bennett intervals described below, as $R\to\infty$
 for fixed $n$.
-The same is true of their hedged betting intervals. Here we
-study the value of $n$ that optimizes the Bennett intervals.}
-
-
+The same is true of their HBCI. Here we
+study the value of $n$ that optimizes the Bennett intervals.
 
 As mentioned above, the tilde in $\tilde O$ hides powers of $\log(n)$.
 Those powers are present in error bounds for adversarially
@@ -753,53 +713,46 @@ We will consider working models of the form
 \end{align}
  even though the actual variance is not
 necessarily any power of $n$. This approach is
-\art{less cumbersome than bounding the variance between
+less cumbersome than bounding the variance between
 $\Omega(n^{-\theta})$ and $O(n^{-\theta+\epsilon})$,
-and we believe it provides clearer insights.}
+and we believe it provides clearer insights.
 
 We know that taking $\theta=1$ underestimates
-the quality of RQMC \art{because the variance
-is $o(1/n)$ for the RQMC methods we use}. 
+the quality of RQMC because the variance
+is $o(1/n)$ for the RQMC methods we use. 
 The smooth case with $\theta = 3$ is optimistic
 while the BVHK case with $\theta=2$ is intermediate.
 
-\fred{[I am not sure that I know what these are.  When I think empirical Bayes, I am ususally thinking of $f$ coming from a Gaussian process.]}
- \art{[I had a typo. I should have typed `empirical Bernstein'.]}
-
 If $R\to\infty$ for fixed $n$, then the predictable
-plug-in empirical Bernstein intervals 
-\art{have half widths $H^\prpleb$ that satisfy}
+plug-in EBCI
+have half widths $H^\prpleb$ that satisfy
 \begin{align}\label{eq:purplewidth}
-\sqrt{R}H^\prpleb\to \sigma_n\sqrt{2\log(2/\alpha)}.
+\sqrt{R}H^{\prpleb(R)}\to \sigma_n\sqrt{2\log(2/\alpha)}.
 \end{align}
-\art{The hedged betting intervals have half width
+The HBCI have half widths
 $H^\prpl$ that satisfy the same rate.
 As a result, both methods
 give interval widths that are $O(n^{-\theta/2}R^{-1/2})$
-as $R\to\infty$.}
-For a fixed product $N=nR$, this is narrowest at $R=1$
+as $R\to\infty$.
+For a fixed product $N=nR$, this width is narrowest at $R=1$
 and $n=N$, but of course that is infeasible and also
 that argument ignores the fact that~\eqref{eq:purplewidth}
 is based on a limiting argument as $R\to\infty$.
 
-\art{[Let's use $H$ for half widths and $W$ for widths.]}
-
 To study the tradeoff between $n$ and $R$, we use Bennett's 
 inequality which gives a half width of
 \begin{align}\label{eq:bennettwidth}
-\art{H^\ben}(n,R)=\sqrt{\frac{2\sigma_n^2\log(2/\alpha)}R}
+H^\ben(n,R)=\sqrt{\frac{2\sigma_n^2\log(2/\alpha)}R}
 + \frac{\log(2/\alpha)}{3R}
 \end{align}
 when using $R$ IID observations that each have variance
 $\sigma^2_n$. An oracle that knew $\sigma^2_n$ could
 use this formula to select the best $n$ and $R$
 for a confidence interval subject to a constraint $nR=N$.
-The predictable plug-in empirical Bernstein confidence interval
-\art{and the hedged betting interval}
+The predictable plug-in EBCI
+and the HBCI
 from \cite{WauRam24a} do not assume a known variance
 for the $Y_i$.
-%and it does not handle all $Y_i$ values
-%symmetrically because they use the ordering.  
 However those intervals attain the same asymptotic limiting width
 as $R\to\infty$ that an oracle would get from Bennett's formula. 
 
@@ -814,7 +767,7 @@ discuss integer solutions.
 Let $\sigma^2_n$ follow~\eqref{eq:themodel} and choose $N>0$.
 If $\theta=1$, then the minimizer of~\eqref{eq:bennettwidth} 
 over $n\in[1,\infty)$ is $n_*=1$.
-If $\theta>1$ then the minimizer of~\eqref{eq:bennettwidth}
+If $\theta>1$, then the minimizer of~\eqref{eq:bennettwidth}
 over $n\in(0,\infty)$ is 
 \begin{align}\label{eq:goodn}
 n_*& 
@@ -825,20 +778,11 @@ n_*&
 N}{2\log(2/\alpha)}\right)^{1/(\theta+1)}.
 \end{align}\end{theorem}
 
-% \art{[We also see that $N$ and $\sigma^2_0$ only appear
-% as their product.  We know that $0\le\sigma_0^2\le1/4$ must hold because
-% the most variance we can have for a random variable bounded between
-% $0$ and $1$ is $1/4$. So we know that $N\sigma_0^2\le N/4$. I use that
-% below in some guidance on choosing $n$. For $N=1024$, we would
-% always pick $n<7$. The best power of 2 might still be $n=8$.]}
-
-
-
 \begin{proof}
 Under the model~\eqref{eq:themodel}, with $R=N/n$
 the oracle's half width is
 \begin{align}\label{eq:benh}
-\art{H(n) = H^\ben(n,N/n)}=\sigma_0n^{(1-\theta)/2}N^{-1/2}
+H(n) = H^\ben(n,N/n)=\sigma_0n^{(1-\theta)/2}N^{-1/2}
 \sqrt{2\log(2/\alpha)}
 +\frac{\log(2/\alpha)}{3}\frac{n}N.
 \end{align}
@@ -864,29 +808,31 @@ n^{-(\theta+1)/2} =
 from which~\eqref{eq:goodn} follows.
 \end{proof}
 
-\art{If $n_*<1$, then $n=1$ is best.
+If $n_*<1$, then $n=1$ is best.
 This includes the degenerate case with $\sigma_0=0$.
 If $n_*>N$, then $n=N$ is best.
 If $1<n_*<N$ and $n_*$ is not an integer then the
 best integer $n$ is either $\lfloor n_*\rfloor$
-or $\lceil n_*\rceil$ by the convexity noted in the proof.}
+or $\lceil n_*\rceil$ by the convexity noted in the proof.
 
 For scrambled Sobol' points it is generally best to
 take $n$ to be a power of 2 \cite{Owe22a}, which is not
 reflected in Theorem~\ref{thm:goodn}. We incorporate that restriction
 into some numerical examples in Section~\ref{sec:finite}.
 
-As noted above, when $\theta = 1$, the best $n$ is $n=1$. In that case RQMC is the same as MC, using one uniformly distributed point in $[0,1]$. This result holds for any sampler that gets the ordinary MC rate, even if it has a favorable constant.  In particular, any MC variance reduction techniques that that do not change the convergence rate will not lead to using $n>1$.  They will improve the asymptotic confidence interval width by reducing $\sigma_0$.  
+As noted above, when $\theta = 1$, the best $n$ is $n=1$. In that case RQMC is the same as MC, using one uniformly distributed point in $[0,1]$. This result holds for any sampler that gets the ordinary MC rate, even if it has a favorable constant.  In particular, any MC variance reduction techniques that do not change the convergence rate will not lead to using $n>1$.  They will improve the asymptotic confidence interval width by reducing $\sigma_0$.  
 
 When $\theta>1$, we see that the shortest intervals
-come from taking $n = O(N^{1/(\theta+1)})$.
-The BVHK rate ($\theta=2$) is then $n=O(N^{1/3})$ while the
-rate for smooth integrands ($\theta=3$) is $O(N^{1/4})$.
-Note that when the RQMC convergence rate becomes better,
+come from taking $n = \Theta(N^{1/(\theta+1)})$.
+The BVHK rate ($\theta=2$) is then $n=\Theta(N^{1/3})$ while the
+rate for smooth integrands ($\theta=3$) is $n=\Theta(N^{1/4})$.
+We see that when the RQMC convergence rate becomes better,
 the optimal RQMC sample size to use grows at a slower
 rate in $N$.  This may seem like a paradox, but the explanation
 can be seen in equation~\eqref{eq:bennettwidth}.
 If $\sigma_n$ drops very quickly then the $O(1/\sqrt{R})$ term
+%NB: that one is O() not Theta() because it might have sigma_0=0
+% For now I don't want have O( ) and Theta( ) in the same phrase
 it is in does not dominate the other $O(1/R)$ term as much
 and a larger $R$ is better.
 
@@ -903,24 +849,24 @@ What we see from Theorem~\ref{thm:goodn} is that the optimal
 $n$ grows slowly with $N$. The variance of the average of $R$
 RQMC samples using $n=N/R$ is
 $$
-O(R^{-1}n^{-\theta}) = O( N^{-1}n^{1-\theta})
-= O( N^{-1}N^{(1-\theta)/(\theta+1)})
-%= O( N^{-1+(1-\theta)/(\theta+1)})
-= O( N^{-2\theta/(\theta+1)}).
+\Theta(R^{-1}n^{-\theta}) = \Theta( N^{-1}n^{1-\theta})
+= \Theta( N^{-1}N^{(1-\theta)/(\theta+1)})
+%= \Theta( N^{-1+(1-\theta)/(\theta+1)})
+= \Theta( N^{-2\theta/(\theta+1)}).
 $$
-By requiring a guaranteed confidence level\fred{, rather than an asymptotic one}, we
-get a higher variance than $N^{-\theta}$
+By requiring a guaranteed confidence level, rather than an asymptotic one, we
+get a higher variance for $\hat\mu$ than $\Theta(N^{-\theta})$
 that we could have had with $R=O(1)$.
 For $\theta=2$ the variance rises
-from $O(N^{-2})$ to $O(N^{-4/3})$
+from $\Theta(N^{-2})$ to $\Theta(N^{-4/3})$
 and for $\theta=3$, it rises from
-$O(N^{-3})$ to $O(N^{-3/2})$.
-Put another way, obtaining the guaranteed confidence
-level raise the variance by $O(N^{2/3})$
-and $O(N^{3/2})$ in those two cases.
+$\Theta(N^{-3})$ to $\Theta(N^{-3/2})$.
+Put another way, obtaining a nonasymptotic confidence
+level raises the variance by $\Theta(N^{2/3})$
+and $\Theta(N^{3/2})$ in those two cases.
 
 
-\art{While we cannot always know the best value of $n$ to use
+While we cannot always know the best value of $n$ to use
 in a given setting, Theorem~\ref{thm:goodn} gives us some guidance.
 The asymptotic value of $\theta$ may be known from theory.
 We may also have experience with similar integrands to make a
@@ -939,16 +885,13 @@ For example, with $N=2^{10}$ and $\alpha=0.05$, the bound in~\eqref{eq:guidance}
 is always below $7$ whenever $1\le\theta\le3$. The best integer
 value is $7$ for some values of $\theta$.
 For higher confidence levels (smaller $\alpha$), the optimal
-$n$ is smaller still.
-}
+$n$ is smaller still. 
 
-\art{The values of $N$ and $\alpha$ enter the Bennett half width
+The values of $N$ and $\alpha$ enter the Bennett half width
 of~\eqref{eq:benh} only through  the expression 
 $$N_\alpha\equiv \frac{N}{\log(2/\alpha)}.$$ 
-Thus
-we can think of smaller $\alpha$ 
-an effective budget size $N_\alpha$.  
-}
+Thus we can think of smaller $\alpha$ 
+as providing a smaller effective budget $N_\alpha$.  
 
 
 \begin{theorem}
@@ -967,7 +910,7 @@ Then for $\theta>1$
 \biggl(\frac12
 [{3(\theta-1)}]^{1-\theta}
 N_\alpha\sigma_0^2\biggr)^{1/(\theta+1)}\\
-&=O( N^{\frac{1-\theta}{2\theta+2}})
+&=\Theta( N^{\frac{1-\theta}{2\theta+2}})
 \end{align*}
 as $N\to\infty$.
 \end{theorem}
@@ -1015,63 +958,38 @@ N_\alpha\sigma_0^2\biggr)^{1/(\theta+1)}
 \end{align*}
 as required.
 \end{proof}
-% \art{There's an easier way to get the rate
-% of narrowing but it
-% wouldn't show the constant. We have $n=O(N^{1/(\theta+1)})$
-% from Theorem~\ref{thm:goodn}. So $R=N/n$ and the width
-% is $O(R^{-1})=O(N^{1/(\theta+1)-1})=O(N^{\theta/(\theta+1)})$.
-% Then the narrowing is $O(N^{-\theta/(\theta+1)+1/2})$.
-
-% Does somebody want to look at the limit $\theta\downarrow1$?
-% I'm getting a limit that isn't one, but does approach one
-% as $N\to\infty$.
-% }
-
-% \aadit{This is what I get: \begin{align*}
-% \rho=\frac{({3(\theta-1)})^{(1-\theta)/(\theta+1)}(2)^{\theta/(\theta + 1)}
-% +(3(\theta-1))^{2/(\theta+1)}(2)^{-1/(\theta + 1)}/3}
-% {\sqrt{{2\sigma^2_0N_\alpha}}+1/3}N_\alpha^{1/(\theta+1)}\sigma_0^{2/(\theta+1)}
-% \end{align*}
-%\art{Thanks.  I kept putting a wrong sign on one of the $N_*$ exponents and never got around to the 2s.}
-
 
 For the BVHK case with $\theta=2$, 
-we find that RQMC narrows the widths by $O(N^{-1/6})$.
+we find that RQMC narrows the widths by $\Theta(N^{-1/6})$.
 For the smooth case with $\theta=3$,
-we get a more favorable width ratio of $O(N^{-1/4})$.
-The MC widths are $O(N^{-1/2})$, and so for the
-BVHK case the RQMC widths are $O(N^{-2/3})$
-while for the smooth case, they are $O(N^{-3/4})$.
+we get a more favorable width ratio of $\Theta(N^{-1/4})$.
+The MC widths are $\Theta(N^{-1/2})$, and so for the
+BVHK case the RQMC widths are $\Theta(N^{-2/3})$
+while for the smooth case, they are $\Theta(N^{-3/4})$.
 
 
 \section{Finite sample evaluations}\label{sec:finite}
 
 Here we present some finite sample evaluations
-of empirical Bernstein based confidence intervals
-using RQMC.  We begin with finite $N$ and interval
-widths based on Bennett's inequality.  They are
-then exact for Bennett's inequality which the
-predictable plug-in empirical Bernstein confidence intervals
-of \cite{WauRam24a} match asymptotically.
+of the EBCI (specifically the predictable plug-in one) and 
+the HBCI, both using RQMC, for 95\% confidence.
+We begin with finite $N$ and for some integrands with known RQMC variance, we find the $n$ that
+minimizes the interval widths from Bennett's inequality.  
+They are then the exact best $n$ for Bennett's inequality which the
+HBCIs and EBCIs of \cite{WauRam24a} match asymptotically.
 After that we present finite sample results on the
-actual predictable plug-in empirical Bernstein confidence
-intervals using code from \art{xxx}.
+EBCIs and HBCIs for a variety of integrands differing in smoothness and dimension. The HBCIs are usually narrower.
+Finally, we compare the empirically optimal $n$ for the HBCIs to the values that optimize Bennett's inequality. The HCBI widths approach those from Bennett's inequality for large $R$ and we find that the optimal $n$ for HBCI tend to be the same or smaller than the ones we get from Bennett's inequality.
 
-While our presentation has been for half widths
-we do our numerical examples for the \art{width $W=2H$}
-themselves.  The \art{main} difference is that the
-empirically generated widths reflect the intersection
-of confidence intervals with $[0,1]$.  When $Y$ has
-an asymmetric distribution, this intersection can
-make the interval width different from twice the
-empirical Bernstein half width.
+For our HBCI computations, we used $\theta=1/2$. The software we used comes from \cite{hedged_algo} which has code to reproduce the figures in \cite{WauRam24a}. It calls the HBCI and predictable plug-in EBCI algorithms from \cite{bet_algo}.
+The scrambled Sobol' points we used were from QMCPy \cite{QMCPy2020a}.
 
 \subsection{Semi-empirical evaluations}\label{sec:semiempirical}
 
 We can compute the width of intervals based on Bennett's inequality
 for some specific cases.  We saw in Section~\ref{sec:asymptotic}
 that the RQMC sample sizes $n$ grow at slow rates
-$O(N^{1/3})$ or $O(N^{1/4})$ as the budget $N$ increases.
+$\Theta(N^{1/3})$ or $\Theta(N^{1/4})$ as the budget $N$ increases.
 Here we get a more detailed view of that phenomenon using
 the asymptotic formula for some specific variance rates.
 We can compute these confidence interval widths for very
@@ -1080,12 +998,12 @@ large values of $N$ that would be impractical to simulate.
 The digital nets of Sobol' \cite{Sob67} under the nested
 uniform scramble of \cite{Owe95} have a stratification
 property.  The $n$ values of $x_{ij}$ for $i=1,\dots,n$
-and any $j$ have one value uniformly
-distributed in each interval \art{$[(\ell-1)/n,\ell/n)$
-for $\ell=1,\dots,n$} and those $n$ values are mutually
+and any component $j=1,\dots,d$ have one value uniformly
+distributed in each interval $[(\ell-1)/n,\ell/n)$
+for $\ell=1,\dots,n$ and those $n$ values are mutually
 independent. This allows us to work out
-the value of $\sigma_0$ and $\theta$ for some illustrative
-examples.  The random linear scramble of \cite{Mat98} combined
+the finite sample RQMC variances for
+some illustrative examples.  The random linear scramble of \cite{Mat98} combined
 with a digital shift attains the same variance as the nested
 uniform scramble, but it has some dependencies among the stratified
 sample values.  In both cases, the $d$ vectors $(x_{1j},
@@ -1109,69 +1027,47 @@ algorithm, that could only be true for a very minimal
 set of functions~$f$.
 We also take $N$ to be a power of 2.
 
-When $d=1$ we write the variable of integration as $x$.
-For $f(x)=x$ we can use the stratified sampling property
-to see that $\var(\hat\mu) = 1/(12n^3)$.
-In this case $\tilde O(n^{-3})$ is actually $O(n^{-3})$.
-This is an example function that attains the smooth
-rate as would any one dimensional function for
-which $f'(x)^2$ is Riemann integrable.
-
-For $d=1$, the BVHK case arises for any integrand
-of bounded variation in the usual sense.
-We get $\var(\hat\mu)\le V_{\hk}(f)^2/n^2$
-because $D_n^*$ for the stratified sample
-cannot be larger than $1/n$. 
-%\art{[Let's double check this. Checked!]}
-% D_n^* will be the unanchored discrepancy of some 
-% interval $[k/n,k/n+b)$ for $b<1/n$.  That interval will 
-% have discrepancy at most max(b/n,(1-b)/n).
+For $d=1$ and $f$ of bounded variation in the usual sense,
+we get $\var(\hat\mu)\le V_{\hk}(f)^2/n^2$.
+This holds because $D_n^*$ for the stratified sample
+cannot be larger than $1/n$.
 For illustration we choose a function with $V_{\hk}(f)=1$
 for which we know exactly what the RQMC variance is
 for $n$ a power of $2$.
 That integrand is $f(x)=1\{x<1/3\}$.
-It is constant within $n-1$ of the intervals \art{$[(\ell-1)/n,\ell/n)$.}
+It is constant within $n-1$ of the intervals $[(\ell-1)/n,\ell/n)$.
 All of this function's variation happens 
-\art{within just one of those intervals.}
+within just one of those intervals.
 By inspecting the base $2$ expansion $1/3=0.010101\cdots$
-we can see that the remaining value of $f(x_\ell)$ equals
+we can see that the remaining value of $f(x_\ell)$ 
+is $1$ or $0$ and it equals
 $1$ with a probability that is either $1/3$ if $\log_2(n)$
 is an odd integer or is $2/3$ if $\log_2(n)$ is an
 even integer. It follows that $\var(\hat\mu_n)=2/(9n^2)$.
 
 
-\art{The result in Table~\ref{tab:bvhkcase} for $N=1024$
-is to choose $n=8$ which violates the guidance that
-the best $n$ is at most $7$ when $N=1024$ and $\alpha=0.05$. 
-The reason is that this
-table restricts to powers of $2$, and $n=8$ is better
-than $n=4$.
-}
 
 Table~\ref{tab:bvhkcase} shows how the width
 minimizing value of $n$ increases with $N$ in the BVHK
-case \art{with $f(x) = 1\{x<1/3\}$.}
-These are full widths, not half widths.
-The increase is quite slow. By $N=1024$
+case with $f(x) = 1\{x<1/3\}$.
+These are widths $W=2H^\ben(n,N/n)$ using
+equation~\eqref{eq:bennettwidth}, not half widths.
+Some are larger than $1$, because the Bennett
+width does not reflect that we would intersect the intervals with $[0,1]$.
+The increase in $n$ is quite slow. By $N=1024$
 the best RQMC sample size is only $n=8$
 and this remains the optimal sample size up to $N=4096$.
 The value $N^{2/3}W$ very quickly becomes constant.
-\art{For non-integer $\theta$ (not shown here) the
+For non-integer $\theta$ (not shown here) the
 scaled widths fluctuation within a finite range
-instead of approaching a constant.}
+instead of approaching a constant.
 
-Table~\ref{tab:smoothcase} shows \art{sample sizes for our example 
-$f(x)=x$ of the smooth case.}  
-An RQMC sample size of $n=8$ becomes
-optimal for $N=4096$ and remains optimal up
-to $N=32768$.  The values $N^{3/4}W$
-there are identical. Consistent with the results of
-Section~\ref{sec:asymptotic}, the values $n$
-grow at a slower rate with $N$ than in the
-BVHK case while the widths $W$ decrease at
-a faster rate.
-
-
+The result in Table~\ref{tab:bvhkcase} for $N=1024$
+is to choose $n=8$ which violates the guidance that
+the best $n$ is at most $7$ when $N=1024$ and $\alpha=0.05$.
+The reason is that this
+table restricts to powers of $2$, and $n=8$ is better
+than $n=4$.
 
 \begin{table}[t]\centering
 \begin{tabular}{crrcc}
@@ -1194,77 +1090,98 @@ a faster rate.
 As $N$ varies for $f(x)=1\{x<1/3\}$, this table shows the
 value of $n$ that minimizes the width of Bennett's
 interval, along with the minimizing width $W$
-and $N^{1/6}W$. Each row corresponds to a value of $N$
+and $N^{2/3}W$. Each row corresponds to a value of $N$
 for which $n$ has increased.}
 \end{table}
+
+Our second example is $f(x)=xe^{x-1}$. This function
+is bounded between $0$ and $1$.  We chose it because it
+is smooth enough to have $\theta=3$ while also not
+a polynomial or an antisymmetric function which would
+make the problem artificially easy for some methods. 
+Because of the stratification, we know that
+\begin{align}\label{eq:varsobol1d}
+\var(\hat\mu) =\frac1{n^2}\sum_{\ell=1}^n\var( f(x_\ell))
+\end{align}
+where $x_\ell\sim\dunif[(\ell-1)/n,\ell/n]$ are independent.
+Also
+\begin{align}\label{eq:varonesmooth}
+\var(f(x_\ell))=n\int_{(\ell-1)/n}^{\ell/n}f(x)^2\rd x
+-\Bigl(n\int_{(\ell-1)/n}^{\ell/n}f(x)\rd x\Bigr)^2
+\end{align}
+which can be computed for finite $n$ using the closed form antiderivatives of $f$ and $f^2$.  
+%Using~\eqref{eq:varonesmooth}
+%in~\eqref{eq:varsobol1d} we get a value that increases
+%rapidly towards the asymptotic expression but differs
+%meaningfully for $n\le 8$.
+We know that as $n$ increases through powers of 2
+$$
+\var(\hat\mu) \asymp
+\frac1{12n^3}\int_0^1f'(x)^2\rd x = \frac{5-e^{-2}}{48n^3}
+$$
+but the exact variances are somewhat different for $n\le8$.
+
+
+
+Table~\ref{tab:smoothcase} shows how the optimal sample sizes 
+$n$ grows with $N$ for our smooth example 
+$f(x)=xe^{x-1}$.
+An RQMC sample size of $n=8$ becomes
+optimal for $N=4{,}096$ and remains optimal up
+to $N=32{,}768$.  The values $N^{3/4}W$
+settle down rapidly as $N$ increases.
+Consistent with the results of
+Section~\ref{sec:asymptotic}, the values $n$
+grow at a slower rate with $N$ than in the
+BVHK case while the widths $W$ decrease at
+a faster rate.
+
+
 
 \begin{table}\centering
 \begin{tabular}{crrcc}
 \toprule
-      $\log_2(N)$&        $N$ &  $n$ & $W$ & $N^{3/4}W$\\
+ $\log_2(N)$ &  $N$ &  $n$ & $W$ & $N^{3/4}W$ \\
 \midrule
-  \phz0&         1 &  1 &4.03e$+$00 &4.027454\\
-  \phz4&        16 &  2 &5.03e$-$01 &4.027454\\
-  \phz8&       256 &  4 &6.29e$-$02 &4.027454\\
- 12&      4,096 &  8 &7.87e$-$03 &4.027454\\
- 16&     65,536 & 16 &9.83e$-$04 &4.027454\\
- 20&   1,048,576 & 32 &1.23e$-$04 &4.027454\\
- 24&  16,777,216 & 64 &1.54e$-$05 &4.027454\\
- 28& 268,435,456 &128 &1.92e$-$06 &4.027454\\
- \bottomrule
+  0&         1&   1& 4.00e$+$00& 4.003728\\
+  4&        16&   2& 5.17e$-$01& 4.138086\\
+  8&       256&   4& 6.52e$-$02& 4.175717\\
+ 12&      4,096&   8& 8.17e$-$03& 4.185407\\
+ 16&     65,536&  16& 1.02e$-$03& 4.187848\\
+ 20&   1,048,576&  32& 1.28e$-$04& 4.188459\\
+ 24&  16,777,216&  64& 1.60e$-$05& 4.188612\\
+ 28& 268,435,456& 128& 2.00e$-$06& 4.188651\\
+\bottomrule
+%      m         N   n            w  N^3/4w 
+%[1,]  0         1   1 4.003728e+00 4.003728
+%[2,]  4        16   2 5.172607e-01 4.138086
+%[3,]  8       256   4 6.524558e-02 4.175717
+%[4,] 12      4096   8 8.174624e-03 4.185407
+%[5,] 16     65536  16 1.022424e-03 4.187848
+%[6,] 20   1048576  32 1.278216e-04 4.188459
+%[7,] 24  16777216  64 1.597829e-05 4.188612
+%[8,] 28 268435456 128 1.997304e-06 4.188651
+% old numbers for f(x) = x.  The same best n
+% \toprule
+%       $\log_2(N)$&        $N$ &  $n$ & $W$ & $N^{3/4}W$\\
+% \midrule
+%   \phz0&         1 &  1 &4.03e$+$00 &4.027454\\
+%   \phz4&        16 &  2 &5.03e$-$01 &4.027454\\
+%   \phz8&       256 &  4 &6.29e$-$02 &4.027454\\
+%  12&      4,096 &  8 &7.87e$-$03 &4.027454\\
+%  16&     65,536 & 16 &9.83e$-$04 &4.027454\\
+%  20&   1,048,576 & 32 &1.23e$-$04 &4.027454\\
+%  24&  16,777,216 & 64 &1.54e$-$05 &4.027454\\
+%  28& 268,435,456 &128 &1.92e$-$06 &4.027454\\
+%  \bottomrule
 \end{tabular}
 \caption{\label{tab:smoothcase}
-As $N$ varies for $f(x)=x$, this table shows the
+As $N$ varies for $f(x)=xe^{x-1}$, this table shows the
 value of $n$ that minimizes the width of Bennett's
 interval, along with the minimizing width $W$
 and $N^{3/4}W$. Each row corresponds to a value of $N$
 for which $n$ has increased.}
 \end{table}
-
-
-
-% \subsection{Test functions}\label{sec:testfns}
-
-% \art{[Aadit: I'll write here my best guess of what you did
-% or, based on what we now know, what would have been the 
-% best thing do do.  We can iterate.]}
-
-% \aadit{Are we going to include the simulations regarding the Hedged Betting CI from the paper? All of the simulations are on that and PrPl-EB?}
-% \art{Yes, I think we should.}
-
-
-% We begin with $x\in[0,1]$ and $f(x)=x\exp(x)/\exp(1)$.
-% This function has minimum $0$ and maximum $1$,  and it is an example
-% with $\theta=3$. It is not symmetric about $x=1/2$
-% nor are values $x$ of the form $k/n$ special for it.
-% Those are factors that beyond variance, could make it
-% artifically easy for RQMC with Sobol' points.
-
-% For $N=2^{10}$ and $n$ equal to powers of two ranging
-% from $n=1$ to $n=2^9$, we run the plug-in empirical
-% Bernstein algorithm and compute a confidence interval
-% based on $R=N/n$ independent RQMC point sets of size $n$ each.
-% We repeat this process \art{xxx} times independently
-% and for each value of $n$ record the full confidence
-% interval width $W$.  The average of these widths is plotted
-% versus $n$ in Figure xxx.  That figure also shows the
-% 10'th and 90'th percentiles of the width.  The best value
-% of $n$ for $N=2^{10}$ is xxx. The best value from
-% Table~\ref{tab:smoothcase} for $f(x)=x$ is $n=4$
-% and that is also the best value we get for
-% $\sigma^2_n$ matching the asymptotic rate for this integrand.
-
-
-
-% The third test function is
-% $$
-% f(\bsx) = 1\{x_1+x_2\ge 2/3\},\quad \bsx\in[0,1]^2.
-% $$
-% This function has infinite variation in the sense
-% of Hardy and Krause.
-% based on convergence rates for area of triangles
-% it should have $\theta=3/2$. This might also
-% be proved by Zhijian He in some article.
 
 \subsection{Ridge functions}
 
@@ -1272,11 +1189,13 @@ While the betting intervals are asymptotically of the
 same width as we would get from Bennett's formula, here
 we investigate what choices of $n$ and $R$ give the
 narrowest interval widths for some finite $N$. 
-\art{It is well known that smoothness and dimension affect
+These computations produce actual intervals
+that we then intersect with $[0,1]$.
+It is well known that smoothness and dimension affect
 the performance of RQMC methods.
 We choose to use ridge functions because that makes it
 straightforward to vary both the dimension and
-smoothness of our test functions.}
+smoothness of our test functions.
 
 Let $\Phi$ be the $\dnorm(0,1)$ cumulative distribution function.
 Then for $\bsx\sim\dunif[0,1]^d$ the vector
@@ -1298,7 +1217,7 @@ g_\fin(v) & = \min\Bigl(1,\frac{\sqrt{\max(v+2,0)}}2\Bigr).
 
 All of the above choices give ridge functions bounded between $0$ and $1$.
 They span a very wide range of QMC regularity conditions.
-Using $g_\jmp$ \art{makes $f$ discontinuous}
+Using $g_\jmp$ makes $f$ discontinuous
 and it has infinite variation in
 the sense of Hardy and Krause for $d\ge2$. 
 Using $g_\knk$ makes $f$ have infinite variation in
@@ -1307,44 +1226,39 @@ it has been seen to be a more `QMC friendly' integrand
 than $g_\jmp$ in high dimensions because it has an
 asymptotically bounded mean dimension \cite{mdridge},
 meaning that it is dominated by low dimensional 
-interactions.  \art{It is continuous, has one weak derivative
-but is not differentiable everywhere.} Using $g_\smo$ makes $f$ infinitely
+interactions.  It is continuous, has one weak derivative
+but is not differentiable everywhere. Using $g_\smo$ makes $f$ infinitely
 differentiable which is generally a very QMC friendly
 property.  Using $g_\fin$ gives $f$ a property
 similar to some integrands in financial option valuation, namely an
 unbounded derivative where $v=-2$.
 
 For each of these four ridge functions, we 
-considered budgets \art{$N=2^K$ for $k\in\{8,10,12,14,16\}$
-with RQMC sample sizes $n=2^k$ for $k\in\{0,1,2,3,4,5,6\}$}
+considered budgets $N=2^K$ for $K\in\{8,10,12,14,16\}$
+with RQMC sample sizes $n=2^k$ for $k\in\{0,1,2,3,4,5,6\}$
 in dimensions $d\in\{1,2,4,16\}$.  All of those
-conditions were repeated $20$ times.    In each
-repetition we computed the width of the \aadit{Hedged} betting
-interval, the width of the empirical Bernstein
-window and the width of the CLT window.
+conditions were repeated $20$ times independently. In each
+repetition we computed the width of the HBCI, the width of the EBCI, and the width of the CLT window.
 
-The hedged betting intervals were narrower than the corresponding
-empirical Bernstein intervals about 92.1\% of the time.
+The HBCI were narrower than the corresponding
+EBCI about 92.1\% of the time.
 The CLT intervals were narrower than the corresponding
-betting intervals 99.6\% of the time. The few times
+HBCI 99.6\% of the time. The few times
 that the CLT intervals were wider were predominantly
-from cases with $n=1$. The empirical Bernstein
-intervals were never narrower than the CLT intervals.
-\art{In some cases, the empirical Bernstein intervals
+from cases with $n=1$. The EBCI were never narrower than the CLT intervals.
+In some cases, the EBCI
 had width $1$. This only happened for $N=256$ and
 $n=32$ or $64$. Those cases have small replicate
-numbers $R=8$ and $R=4$, respectively.}
+numbers $R=8$ and $R=4$, respectively.
 
-The betting intervals are most interesting because they
+The HBCI are most interesting because they
 have non-asymptotic coverage and are usually narrower
-than the empirical Bernstein intervals.
+than the EBCI.
 We made an extensive graphical exploration of their width
 versus $n$ (for every combination of dimension, ridge function and $N$).
 We similarly explored width versus budget $N$ and width
-versus dimension $d$, in each case for all of the other
+versus dimension $d$, in each case at all levels of all of the other
 variables.  
-
-
 
 It was evident that the dimension $d$ made
 hardly any difference to the width of the confidence
@@ -1352,10 +1266,10 @@ intervals.  An additive model
 using factors equal to the dimension $d$, the RQMC
 sample size $n$, the function $f$ and the budget $N$
 explained 94.09\% of the variance in the logarithm
-of the betting interval width.  That same model without
+of the HBCI width.  That same model without
 dimension explained 94.05\%  of this variance.
 It was surprising to see no dimension effect
-for betting interval width in our ridge functions.
+for the HBCI width in our ridge functions.
 We knew that the mean and variance of $f(\bsx)$ for
 any of those ridge functions does not depend on $d$
 but that does not imply that averages over $n$ RQMC
@@ -1363,18 +1277,18 @@ points would be invariant to $d$.
 Because $d$ made no material difference to the
 widths, we pooled information from all dimensions $d$.
 
-It was clear graphically, and not surprising, that increasing $N$ by a factor of $4$ always narrows the betting interval width by a noticeable amount.
+It was clear graphically, and not surprising, that increasing $N$ by a factor of $4$ always narrows the HBCI width by a noticeable amount.
 The interesting non-monotone patterns were from the way that the
 width depends on $n$ with the other variables fixed. 
 Figure~\ref{fig:meanwidths} shows the mean widths of
-betting intervals versus $n$
+HBCI versus $n$
 for all four ridge functions and all five budgets $N$.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.9\linewidth]{figmeanwidths}
     \caption{
-Mean confidence interval width for the betting method
+Mean confidence interval width for the HBCI
 as a function of the RQMC sample size $n$.
 There is one panel for each of the $4$ ridge functions.
 Within a panel the curves are for $N=2^{2r}$
@@ -1405,15 +1319,15 @@ the larger optimal $n$.
 
 Our expectations were based on asymptotic
 considerations.
-First, we used the fact that the betting interval
+First, we used the fact that the HBCI
 widths asymptotically approach the optimal
-empirical Bernstein widths from Bennett's
+EBCI widths from Bennett's
 inequality.  Second, we supposed that the RQMC variance
 is asymptotic to $\sigma_0^2n^{-\theta}$ apart from logarithmic
 factors. We also used the finite sample Bennett
-widths from~\eqref{eq:benh} \art{because
+widths from~\eqref{eq:benh} because
 the asymptotic expression $\sigma_n\sqrt{2\log(2/\alpha)/R}$
-does not have a meaningful optimum.}
+does not have a meaningful optimum.
 The empirical results strongly confirm our
 asymptotic findings that small $n$ is best overall,
 but among such small $n$, it is less clear
@@ -1421,107 +1335,81 @@ how to choose $n$ based on smoothness of $f$.
 
 \subsection{Functions with known RQMC variance}
 
-In some simple settings we can compute the
-RQMC variance exactly (i.e., non-asymptotically)
-for a specific value of $n$.
-This allows us to directly
-compare the widths of the betting intervals to
+Here we return to the functions
+from Section~\ref{sec:semiempirical} with
+known non-asymptotic RQMC variance.
+They allow us to directly
+compare the widths of the HBCI to
 the value we get from Bennett's formula. We know
-that the betting intervals have that length
-asymptotically matches Bennett's formula, but
-we also want to study how that length
-approaches Bennett's formula in some examples.
-We choose one smooth function with $\theta=3$
-and one discontinuous function with $\theta=2$.
-Both of them have dimension $d=1$.
-
-For $d=1$ and a nested uniform scramble of $n=2^k$ Sobol'
-points we know that 
-\begin{align}\label{eq:varsobol1d}
-\var(\hat\mu) =\frac1{n^2}\sum_{\ell=1}^n\var( f(x_\ell))
-\end{align}
-where $x_\ell\sim\dunif[(\ell-1)/n,\ell/n]$ are independent.
-The smooth function we choose is $f(x)=xe^{x-1}$.
-We know that $\var(\hat\mu)\asymp (5-e^{-2})/(48n^3)$
-for this function.
-For exact computations we have
-\begin{align}\label{eq:varonesmooth}
-\var(f(x_\ell))=n\int_{(\ell-1)/n}^{\ell/n}f(x)^2\rd x
--\Bigl(n\int_{(\ell-1)/n}^{\ell/n}f(x)\rd x\Bigr)^2
-\end{align}
-which can be computed for finite $n$ using the closed form antiderivatives of $f$ and $f^2$.  Using~\eqref{eq:varonesmooth}
-in~\eqref{eq:varsobol1d} we get a value that increases
-rapidly towards the asymptotic expression but differs
-meaningfully for $n\le 8$.
-The discontinuous function we choose is $f(x)=1\{x<1/3\}$
-from Section~\ref{sec:semiempirical}.
-It has $\var(\hat\mu)=2/(9n^2)$.
+that the HBCI have lengths that
+asymptotically match Bennett's formula, but
+we also want to study how those lengths
+approach Bennett's formula in some examples.
 
 Using the known variances, we can compute the
 half width from Bennett's inequality ~\eqref{eq:bennettwidth}
 for our $\sigma^2_n$ and $R=N/n$ double it
-and then divide the average betting width
-by this value. The results are in shown  in Figure~\ref{fig:widthstoeb}. For our two example
+and then divide the average HBCI width of 20 independent trials
+by this value. The results are shown  in Figure~\ref{fig:widthstoeb}. For our two example
 functions we see that as $R=N/n$ increases (so $n$ decreases
 for fixed $N$)
 the ratio of widths decreases and approaches the
 theoretically expected value of $1$.
-At the smallest $R$ (largest $n$) the betting
-intervals were two or three times as wide as the
+At the smallest $R$ (largest $n$) the HBCI were two or three times as wide as the
 Bennett intervals for the discontinuous function.
 They were somewhat wider for the smooth function.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=1.\linewidth]{figwidthstoeb}
-    \caption{Caption}
+    \includegraphics[width=0.9\linewidth]{figwidthstoeb}
+    \caption{Ratio of mean HBCI width to  width from Bennett's inequality as a function of the RQMC sample size $n$ for the given budgets $N$. The means for the HBCI are taken over the 20 independent replicates. }
     \label{fig:widthstoeb}
 \end{figure}
 
-The betting windows are computed without knowledge
+The HBCI are computed without knowledge
 of the exact variance $\sigma^2_n$ that the Bennett
 interval uses.  They are instead based on estimates
 of that variance and they must therefore allow for
 uncertainty in the variance estimate.  It is then not
 surprising that the resulting intervals are wider
-than the Bennett ones. \art{We see in Table~\ref{tab:benvsbetn} that
-the hedged betting intervals' minimum lengths were
+than the Bennett ones. We see in Table~\ref{tab:benvsbetn} that
+the HBCI's minimum widths were
 not found at larger $n$ than the minimizers
-of the Bennett intervals. They were either equal
-or half as large as $n_*$.}
+of the Bennett intervals. They were either equal to
+or half as large as $n_*$. We also see that empirical
+best values of $n$ are no larger for the smooth
+function than for the discontinuous one, as expected.
 
 
 \begin{table}
 \centering
-\begin{tabular}{rrr}
+\begin{tabular}{rrrrr}
 \toprule
-$N$ & $n_*$ & $n_{\mathrm{opt}}$\\
+&\multicolumn{2}{c}{$1\{x<1/3\}$}&\multicolumn{2}{c}{$xe^{x-1}$}\\
 \midrule
-256 &  4   & 4\\
-1,024&  8   & 4\\
-4,096 & 8   & 8\\
-16,384 & 16 & 16\\
-65,536 & 32 & 16\\
+$N$ & $n_*$ & $n_{\mathrm{opt}}$ & $n_*$ & $n_{\mathrm{opt}}$\\
+\midrule
+256 &  4   & 4 & 4 &2\\
+1,024&  8   & 4 & 4 &4\\
+4,096 & 8   & 8 & 8 &4\\
+16,384 & 16 & 16 & 8 &8\\
+65,536 & 32 & 16 &16 &8\\
 \bottomrule
 \end{tabular}
 \caption{\label{tab:benvsbetn}
 For the given budgets $N$, we show $n_*$ as the
 minimizer of the Bennett width \eqref{eq:benh} 
-over $n=2^k$ for integer $k$, for the function
-$f(x) = 1\{x<1/3\}$. Then $n_{\opt}$ is
+over $n=2^k$ for integer $k$
+%for the function $f(x) = 1\{x<1/3\}$. Then 
+and $n_{\opt}$ is
 the value of $n$ that minimized the average
-width of the hedged betting confidence interval
-for the given $N$.
+width of the HBCI
+for the given $N$. These are shown for functions
+$f(x) =1\{x<1/3\}$ and $f(x)=xe^{x-1}$.
 }
 \end{table}
 
-\art{[I don't see a role for the two dimensional
-discontinuous function after what we have 
-learned from the ridge functions and exact
-variance functions.]}
-
 \section{Discussion}\label{sec:discussion}
-
 In favorable cases
 the RQMC variance is $\tilde O(n^{-3})$ and then
 using a fixed number $R$ of replicates of
@@ -1538,12 +1426,24 @@ For an integrand subject to known bounds, we can get
 a non-asymptotic confidence interval by using $R$
 replicates of $n$ RQMC points using a
 predictable plug-in empirical Berstein confidence
-interval.  In that approach the optimal $n$
-grows proportionally to $N^{1/(\theta+1)}$ and
-the resulting confidence intervals have width
-$O(N^{-\theta/(\theta+1)})$.
-It remains to find a reliable way to choose $n$
-empirically. 
+interval.  There, if $\sigma^2_n=\Theta(n^{-\theta})$
+then the optimal $n$ is $\Theta(N^{1/(\theta+1)})$
+and the resulting confidence intervals have width
+$\Theta(N^{-\theta/(\theta+1)})$.
+While it remains to find a way to choose the optimal $n$
+empirically, we have strong theoretical guidance from 
+equation~\eqref{eq:guidance}
+that we can interpret as an upper bound on $n$ for the
+oracle which is then a reasonable upper bound for HBCIs which have
+to estimate the RQMC variance. When $n$ must be a
+small power of $2$, we can rule out many suboptimal choices.
+
+We have noted several times that there is an asymptotic
+equivalence between the Bennett interval widths and those
+of the EBCI and HBCI intervals.  In our setting that equivalence is as $R\to\infty$
+for fixed $n$. In the RQMC context, the best $n$ is quite small.
+Then for large $N$ it is not surprising that an asymptote as $R\to\infty$
+is very predictive of our results.
 
 It also remains to find a good way to
 use RQMC in confidence sequences as opposed
@@ -1566,7 +1466,7 @@ A confidence sequence based on geometrically
 growing $n$ would not have to be as wide as one for arithmetically
 growing $n$.
 
-\art{For scrambled Sobol' points it is strongly
+For scrambled Sobol' points it is strongly
 advisable to take $n=2^k$ because those are
 the best sample sizes and they can even give
 a better convergence rate. The Halton sequence \cite{Hal60} does
@@ -1578,23 +1478,17 @@ $\var(\hat\mu)=o(1/n)$ without requiring special
 sample sizes $n$ \cite{haltongain}.
 There are however no published non-trivial settings
 where scrambled Halton points can obtain $\theta>2$.
-}
-
-
-% \fred{[Since the practical value of $n$ is small, should we mention that low discrepancy points are typically constructed for large $n$, and that specialized constructions that admit randomizations might be useful?  I doubt that we could get very specific.]}\art{[I don't think so. We still need unbiasedness, so we would have to randomize those special constructions.  I was planning to mention scrambled Halton here at the very end.  Then you don't have special sample sizes $n$, but there are also no known non-trivial settings with $\theta>2$. I didn't want to carry that through the whole paper because it would be hard for a non-QMC person to follow.]}
 
 \section*{Acknowledgments}
 
 We thank Aaditya Ramdas and Ian Waudby-Smith for helpful
-discussions and for the \art{xxx} software
-from \art{xxx} that we used.
+discussions. 
 ABO was supported by the U.S.\ National Science Foundation
 grant DMS-2152780.
-
-\art{TODO: We need tidy up references: capitalizations,
-consistent name vs initials.}
-
+FJH and AGS were supported by U.S.\ National Science Foundation
+grant DMS-2316011.
+AGS was supported by the U.S. DOE Office of Science Graduate Student Research Program.
 \bibliographystyle{plain}
-\bibliography{FJH25,FJHown25,ebci4rqmc}
+\bibliography{FJH25copy,FJHown25copy,ebci4rqmc}
 
 \end{document}
