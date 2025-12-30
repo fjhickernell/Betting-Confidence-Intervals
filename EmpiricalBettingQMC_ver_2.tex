@@ -136,7 +136,7 @@ satisfying the given bounds.
 The context for our work is as follows.
 Many scientific problems require the numerical 
 evaluation of multidimensional
-integrals. When the dimension is high enough then classical tensor product integration rules 
+integrals. When the dimension is high enough, then classical tensor product integration rules 
 like those in \cite{DavRab84} become too expensive to use.
 It is then
 common to use plain Monte Carlo (MC) methods instead.  MC
@@ -145,12 +145,12 @@ squared errors (RMSEs) of $O(n^{-1/2})$ given $n$
 function evaluations.  This rate is slow but it is the
 same in any dimension.  MC also allows one to use statistical
 methods to quantify the uncertainty in the estimated
-integral.  Quasi-Monte Carlo (QMC) 
+integral.  Ordinary quasi-Monte Carlo (QMC) 
 methods (e.g.,  \cite{DicPil10a} and \cite{Nie92}) are deterministic
 sampling strategies that under a bounded variation assumption
 produce integral estimates with error $\tilde O(n^{-1})$ where
 $\tilde O(\cdot)$ means we neglect powers of $\log(n)$.
-Plain QMC methods are deterministic and so they lose the
+Because plain QMC methods are deterministic, they lose the
 uncertainty quantification advantage of MC. RQMC methods, 
 surveyed in \cite{LEcLem02a}, allow one
 to make independent replicates of a statistically
@@ -204,8 +204,8 @@ assumed RQMC
 standard deviation of $\Theta(N^{-\theta/2})$.
 Section~\ref{sec:finite} makes
 some computational investigations.  As predicted by the theory
-the best values of $n$ to use grew slowly with $N$.
-The empirically best values of $n$ for HBCI were no larger
+the best values of $n$ to use grow slowly with $N$.
+The empirically best values of $n$ for HBCI are no larger
 than the oracle values, and sometimes smaller.
 Section~\ref{sec:discussion} has some final comments
 and discussion.
@@ -1354,8 +1354,8 @@ we also want to study how those lengths
 approach Bennett's formula in some examples.
 
 Using the known variances, we can compute the
-half width from Bennett's inequality ~\eqref{eq:bennettwidth}
-for our $\sigma^2_n$ and $R=N/n$ double it
+half width from Bennett's inequality~\eqref{eq:bennettwidth}
+for our $\sigma^2_n$ and $R=N/n$, double it,
 and then divide the average HBCI width of 20 independent trials
 by this value. The results are shown  in Figure~\ref{fig:widthstoeb}. For our two example
 functions we see that as $R=N/n$ increases (so $n$ decreases
