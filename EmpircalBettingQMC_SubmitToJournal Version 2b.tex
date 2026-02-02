@@ -73,14 +73,14 @@
 \newcommand{\fin}{\mathrm{finance}}
 
 \title{Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo}
-\date{April 2025}
-\author{Aadit Jain\\Rancho Bernardo High School
+\date{January 2026}
+\author{Aadit Jain\\University of California, San Diego
  \and
  Fred J. Hickernell \\Illinois Institute of Technology
  \and
  Art B. Owen \\ Stanford University
  \and
- Aleksei G. Sorokin \\ Illinois Institute of Technology
+ Aleksei G. Sorokin \\ University of Chicago
 }
 \begin{document}
 \doublespacing
@@ -229,8 +229,7 @@ parameter $\mu$ is a pair of random quantities $A$ and $B$ with
 \begin{align}\label{eq:ci}
 \Pr( A\le \mu\le B)\ge 1-\alpha.
 \end{align}
-A confidence interval is strict when the right hand
-side above is an equality.
+A confidence interval is strict when the sides of~\eqref{eq:ci} are equal.
 An asymptotic confidence interval is a sequence $(A_n,B_n)$
 of random quantities for which
 $$
@@ -425,10 +424,10 @@ confidence.
 There is a theorem of Bahadur and Savage \cite{BahSav56} that
 reveals sharp constraints on our ability to construct
 nonparametric and non-asymptotic confidence
-intervals.  Here is the description based on \cite{err4qmc}:
-% after fixing it up it is no longer verbatim but also not worth taking the space to explain the difference
+intervals.  Here is the description from \cite{err4qmc}:
+% I just now got and fixed the galleys in that article so the following verbatim quote makes sense
 \begin{quote}They consider a set $\cf$ of distributions on $\real$.
-Letting $\mu(F)=\e(Y)$ for $Y\sim F$, their conditions are:
+Letting $\mu(F)=\e(Y)$ for $Y\sim F\in\cf$, their conditions are:
 \begin{compactenum}[\quad (i)]
 \item For all $F\in\cf$, $\mu(F)$ exists and is finite.
 \item For all $m\in\real$ there is $F\in\cf$ with $\mu(F)=m$.
@@ -990,7 +989,7 @@ EBCIs and HBCIs for a variety of integrands differing in smoothness and dimensio
 Finally, we compare the empirically optimal $n$ for the HBCIs to the values that optimize Bennett's inequality. The HCBI widths approach those from Bennett's inequality for large $R$ and we find that the optimal $n$ for HBCI tend to be the same or smaller than the ones we get from Bennett's inequality.
 
 For our HBCI computations, we used $\theta=1/2$. The simulations presented here were run at
-\url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC.}The software we used comes from \cite{hedged_algo} which has code to reproduce the figures in \cite{WauRam24a}. It calls the HBCI and predictable plug-in EBCI algorithms from \cite{bet_algo}.
+\href{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC}{Betting-Paper-Simulations-for-QMC}. The software we used comes from \cite{hedged_algo} which has code to reproduce the figures in \cite{WauRam24a}. It calls the HBCI and predictable plug-in EBCI algorithms from \cite{bet_algo}.
 The scrambled Sobol' points we used were from QMCPy \cite{QMCPy2020a}.
 
 \subsection{Semi-empirical evaluations}\label{sec:semiempirical}
@@ -1492,7 +1491,7 @@ where scrambled Halton points can obtain $\theta>2$.
 \section*{Acknowledgments}
 
 We thank Aaditya Ramdas and Ian Waudby-Smith for helpful
-discussions. 
+discussions. We thank an anonymous reviewer for helpful comments.
 ABO was supported by the U.S.\ National Science Foundation
 grant DMS-2152780.
 FJH and AGS were supported by U.S.\ National Science Foundation
@@ -1500,7 +1499,4 @@ grant DMS-2316011.
 AGS was supported by the U.S. DOE Office of Science Graduate Student Research Program.
 \bibliographystyle{plain}
 \bibliography{FJH25copy,FJHown25copy,ebci4rqmc}
-
-\listoffigures
-\listoftables
 \end{document}

@@ -72,27 +72,24 @@
 \newcommand{\smo}{\mathrm{smooth}}
 \newcommand{\fin}{\mathrm{finance}}
 
-\title{Reproducing the simulations in ``Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo''}
-\date{April 2025}
-\author{Aadit Jain\\Rancho Bernardo High School
+\title{Reproducing the simulations in \\ ``Empirical Bernstein and betting confidence intervals \\ for randomized quasi-Monte Carlo''}
+\date{January 2026}
+\author{Aadit Jain\\University of California, San Diego
  \and
  Fred J. Hickernell \\Illinois Institute of Technology
  \and
  Art B. Owen \\ Stanford University
  \and
- Aleksei G. Sorokin \\ Illinois Institute of Technology
+ Aleksei G. Sorokin \\ University of Chicago
 }
 \begin{document}
 \doublespacing
 
 \maketitle
-Here is information regarding the simulations for the paper ``Empirical Bernstein and betting confidence intervals for randomized quasi-Monte Carlo'':
-\begin{itemize}
-    \item The simulations, the data generated from the simulations, and the instructions to run the simulations are at the GitHub Repository \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC}.
-    \item The simulations were run in the Jupyter notebook
-\end{itemize}
-were run in the Jupyter notebook at \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/Betting\%20IID\%20vs\%20QMC.ipynb}. The data from these simulations is at the csv file \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/qmc_combined_results.csv}. The instructions to run the simulation notebook are at the README file \url{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC/blob/paper-simulations/simulations/Fixed-time/README.md}.
-\bibliographystyle{plain}
-\bibliography{FJH25copy,FJHown25copy,ebci4rqmc}
+ The purpose of this file is to briefly explain the purpose of the other files in this zip folder that were used to run the simulations in the paper and generate figures and tables present in the paper.
+ 
+The simulations were run in the Jupyter notebook titled ``Betting IID vs QMC.ipynb". This notebook generates the CSV file titled \texttt{qmc\textunderscore combined\textunderscore results.csv} which has all the data from the simulations. There are then five R scrips titled \texttt{example.R}, \texttt{figs.R}, \texttt{makefigs.R}, \texttt{readem.R}, and \texttt{rqmcvar.R} which are responsible for generating the figures and tables present in the paper. The figures they produce are titled \texttt{figmeanwidths.pdf} (Figure 1 of the paper) and \texttt{figwidthstoeb.pdf} (Figure 2 of the paper)  while the tables they produce are titled \texttt{Table1.txt}, \texttt{Table2.txt}, and \texttt{Table3.txt} (with the tables name matching their number in the paper). A user needs to only run the R script \texttt{makefigs.R} to generate the figures and tables, while the other R scripts are called internally. 
+
+It is important to keep the notebook, CSV file, and R scripts in the same folder. Detailed instructions on how to run the simulations and generate the figures and tables can be found in the \texttt{README.md}. The \texttt{README.md}, notebook, CSV file, R scipts, figures, and tables can be found in the GitHub repository \href{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC}{https://github.com/aaditj1962161/Betting-Paper-Simulations-for-QMC}.
 
 \end{document}
